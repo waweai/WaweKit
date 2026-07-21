@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- half sun / half moon: theme toggle -->
+  <circle cx="12" cy="12" r="6.5" fill="none" stroke="#8aa8c7" stroke-width="1.8"/>
+  <path d="M12 5.5 A6.5 6.5 0 0 1 12 18.5 Z" fill="#8aa8c7"/>
+  <g stroke="#8aa8c7" stroke-width="1.6" stroke-linecap="round">
+    <line x1="12" y1="1.2" x2="12" y2="2.8"/>
+    <line x1="12" y1="21.2" x2="12" y2="22.8"/>
+    <line x1="1.2" y1="12" x2="2.8" y2="12"/>
+    <line x1="21.2" y1="12" x2="22.8" y2="12"/>
+  </g>
+</svg>

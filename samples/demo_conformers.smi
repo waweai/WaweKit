@@ -1,0 +1,8 @@
+# Demo set for conformer generation: flexible molecules with several
+# rotatable bonds, so multiple distinct 3D shapes are expected.
+CC(C)Cc1ccc(cc1)C(C)C(=O)O ibuprofen
+OCCCCCCO hexane-1,6-diol
+CCCCCCCC octane
+CC(=O)OCCN(C)C acetylcholine-ish
+c1ccccc1CCCCc1ccccc1 1,4-diphenylbutane
+CC(N)C(=O)NC(C)C(=O)O ala-ala-dipeptide

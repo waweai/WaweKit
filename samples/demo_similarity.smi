@@ -1,0 +1,16 @@
+# Demo set for the Similarity Search feature: an aspirin analogue series that
+# fades out into unrelated chemistry. Search for aspirin and the salicylates
+# should rank top, the other drugs mid, and the sugar last.
+CC(=O)Oc1ccccc1C(=O)O aspirin
+O=C(O)c1ccccc1O salicylic-acid
+COC(=O)c1ccccc1O methyl-salicylate
+CCOC(=O)c1ccccc1O ethyl-salicylate
+NC(=O)c1ccccc1O salicylamide
+Nc1ccc(C(=O)O)c(O)c1 4-aminosalicylic-acid
+O=C(O)c1cc(-c2ccc(F)cc2F)ccc1O diflunisal
+O=C(O)c1ccccc1 benzoic-acid
+Oc1ccccc1 phenol
+CC(=O)Nc1ccc(O)cc1 paracetamol
+CC(C)Cc1ccc(cc1)C(C)C(=O)O ibuprofen
+Cn1cnc2c1c(=O)n(C)c(=O)n2C caffeine
+OCC1OC(O)C(O)C(O)C1O glucose

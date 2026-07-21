@@ -1,0 +1,11 @@
+# Demo set for the Standardize feature: salts, charges, tautomers, duplicates
+CC(=O)Oc1ccccc1C(=O)[O-].[Na+] aspirin-sodium-salt
+CC(=O)Oc1ccccc1C(=O)O aspirin
+c1ccccc1.Cl benzene-hydrochloride
+CCO ethanol
+CCO.O ethanol-hydrate
+CC(=O)[O-] acetate-anion
+CC(=O)O acetic-acid
+Oc1ccccn1 2-hydroxypyridine
+O=c1cccc[nH]1 2-pyridone
+CC(C)Cc1ccc(cc1)C(C)C(=O)O ibuprofen

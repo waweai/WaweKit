@@ -1,0 +1,17 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "wawekit-example-plugin"
+version = "0.1.0"
+description = "A minimal reference plugin demonstrating the Wawekit plugin API."
+requires-python = ">=3.12"
+
+# This is the whole mechanism: an entry point in the "wawekit.plugins" group,
+# pointing at a class matching wawekit.plugins.base.WawekitPlugin's shape.
+[project.entry-points."wawekit.plugins"]
+example = "example_plugin:ExamplePlugin"
+
+[tool.hatch.build.targets.wheel]
+packages = ["example_plugin"]

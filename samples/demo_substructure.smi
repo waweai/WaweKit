@@ -1,0 +1,19 @@
+# Demo set for substructure search. Try these queries:
+#   c1ccncc1            pyridine ring
+#   S(=O)(=O)N          sulfonamide
+#   [NX3][CX3](=O)      amide (SMARTS)
+#   c1ccccc1            benzene ring
+Cc1ccncc1 4-methylpyridine
+Clc1cccnc1 3-chloropyridine
+c1ccncc1 pyridine
+Nc1ccc(S(N)(=O)=O)cc1 sulfanilamide
+Cc1ccc(S(N)(=O)=O)cc1 toluenesulfonamide
+CC(=O)Nc1ccccc1 acetanilide
+CC(=O)Nc1ccc(O)cc1 paracetamol
+CCN(CC)CCNC(=O)c1ccc(N)cc1 procainamide
+c1ccccc1 benzene
+Cc1ccccc1 toluene
+CCCCCC hexane
+CCO ethanol
+CC(=O)Oc1ccccc1C(=O)O aspirin
+O=C(O)c1ccccc1 benzoic-acid

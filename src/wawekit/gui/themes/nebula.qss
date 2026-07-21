@@ -1,0 +1,128 @@
+/* Wawekit — Nebula theme
+   A deep cosmic purple theme with violet and blue accents.
+   Rich and dramatic — ideal for late-night sessions. */
+
+QWidget {
+    background-color: #1a1525;
+    color: #d8d0e8;
+    font-family: "Segoe UI", "Cantarell", "Helvetica Neue", sans-serif;
+    font-size: 10pt;
+}
+
+QMainWindow, QDialog {
+    background-color: #1a1525;
+}
+
+QMenuBar {
+    background-color: #231e30;
+    border-bottom: 1px solid #352e45;
+}
+QMenuBar::item:selected {
+    background-color: #6a4ea0;
+}
+
+QMenu {
+    background-color: #231e30;
+    border: 1px solid #352e45;
+}
+QMenu::item {
+    padding: 6px 36px 6px 20px;
+}
+QMenu::item:selected {
+    background-color: #6a4ea0;
+}
+
+QToolBar {
+    background-color: #231e30;
+    border-bottom: 1px solid #352e45;
+    spacing: 4px;
+    padding: 3px;
+}
+
+QStatusBar {
+    background-color: #231e30;
+    border-top: 1px solid #352e45;
+}
+
+QPushButton {
+    background-color: #2e2840;
+    border: 1px solid #413a55;
+    border-radius: 4px;
+    padding: 5px 12px;
+}
+QPushButton:hover { background-color: #383250; }
+QPushButton:pressed { background-color: #6a4ea0; }
+
+QRadioButton::indicator {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #5a5270;
+    border-radius: 8px;
+    background-color: #16111f;
+}
+QRadioButton::indicator:checked {
+    border: 1px solid #8a6ed0;
+    background-color: qradialgradient(cx: 0.5, cy: 0.5, radius: 0.5,
+                                      fx: 0.5, fy: 0.5,
+                                      stop: 0 #8a6ed0, stop: 0.5 #8a6ed0,
+                                      stop: 0.55 #16111f, stop: 1 #16111f);
+}
+QRadioButton::indicator:disabled {
+    border: 1px solid #383250;
+    background-color: #231e30;
+}
+QRadioButton:disabled {
+    color: #5a5270;
+}
+
+QDockWidget {
+    titlebar-close-icon: none;
+    border: 1px solid #352e45;
+}
+QDockWidget::title {
+    background-color: #231e30;
+    padding: 6px;
+}
+
+QProgressBar {
+    border: 1px solid #413a55;
+    border-radius: 4px;
+    text-align: center;
+    background-color: #231e30;
+}
+QProgressBar::chunk { background-color: #6a4ea0; }
+
+QToolTip {
+    background-color: #231e30;
+    color: #d8d0e8;
+    border: 1px solid #6a4ea0;
+}
+
+QTableView {
+    background-color: #16111f;
+    alternate-background-color: #1e1828;
+    gridline-color: #2e2840;
+    selection-background-color: #6a4ea0;
+    selection-color: #ffffff;
+    border: none;
+}
+QHeaderView::section {
+    background-color: #231e30;
+    color: #d8d0e8;
+    border: none;
+    border-right: 1px solid #352e45;
+    border-bottom: 1px solid #352e45;
+    padding: 4px 8px;
+}
+
+QListWidget {
+    background-color: #16111f;
+    border: none;
+}
+QListWidget::item {
+    padding: 4px 6px;
+}
+QListWidget::item:selected {
+    background-color: #6a4ea0;
+    color: #ffffff;
+}

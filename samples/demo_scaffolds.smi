@@ -1,0 +1,18 @@
+# Demo set for scaffold analysis: shared cores, some singletons, some acyclic.
+# Three diphenylmethane-ish / biphenyl analogues share a core; several
+# para-substituted benzenes share the benzene scaffold; a couple are acyclic.
+c1ccc(-c2ccccc2)cc1 biphenyl
+Cc1ccc(-c2ccccc2)cc1 4-methylbiphenyl
+Oc1ccc(-c2ccccc2)cc1 4-hydroxybiphenyl
+c1ccc(Cc2ccccc2)cc1 diphenylmethane
+Cc1ccc(Cc2ccccc2)cc1 4-methyldiphenylmethane
+CC(=O)Nc1ccccc1 acetanilide
+Nc1ccccc1 aniline
+Oc1ccccc1 phenol
+Cc1ccccc1 toluene
+c1ccncc1 pyridine
+Cc1ccncc1 4-methylpyridine
+CC(=O)O acetic-acid
+CCO ethanol
+CCCCCC hexane
+O=C(O)CCCCC(=O)O adipic-acid

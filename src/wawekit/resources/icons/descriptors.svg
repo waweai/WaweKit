@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- ruler + bars: measuring numeric properties -->
+  <rect x="3.5" y="4" width="17" height="6" rx="1.2"
+        fill="none" stroke="#8aa8c7" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M7.5 4 V7  M11 4 V8  M14.5 4 V7  M18 4 V8"
+        stroke="#8aa8c7" stroke-width="1.4" stroke-linecap="round"/>
+  <path d="M5 20 V15  M9.7 20 V12.5  M14.3 20 V16  M19 20 V13.5"
+        stroke="#8aa8c7" stroke-width="1.8" stroke-linecap="round"/>
+</svg>

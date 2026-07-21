@@ -1,0 +1,129 @@
+/* Wawekit — Creme Coffee theme
+   A warm cream and coffee palette reminiscent of parchment and espresso.
+   Excellent readability with a cozy, inviting aesthetic. */
+
+QWidget {
+    background-color: #f0e6d3;
+    color: #3b2e1e;
+    font-family: "Segoe UI", "Cantarell", "Helvetica Neue", sans-serif;
+    font-size: 10pt;
+}
+
+QMainWindow, QDialog {
+    background-color: #f0e6d3;
+}
+
+QMenuBar {
+    background-color: #e4d8c3;
+    border-bottom: 1px solid #cfc0a8;
+}
+QMenuBar::item:selected {
+    background-color: #8b6e4e;
+    color: #ffffff;
+}
+
+QMenu {
+    background-color: #f7f0e2;
+    border: 1px solid #cfc0a8;
+}
+QMenu::item {
+    padding: 6px 36px 6px 20px;
+}
+QMenu::item:selected {
+    background-color: #8b6e4e;
+    color: #ffffff;
+}
+
+QToolBar {
+    background-color: #e4d8c3;
+    border-bottom: 1px solid #cfc0a8;
+    spacing: 4px;
+    padding: 3px;
+}
+
+QStatusBar {
+    background-color: #e4d8c3;
+    border-top: 1px solid #cfc0a8;
+}
+
+QPushButton {
+    background-color: #f7f0e2;
+    border: 1px solid #c5b59c;
+    border-radius: 4px;
+    padding: 5px 12px;
+}
+QPushButton:hover { background-color: #ece3d2; }
+QPushButton:pressed { background-color: #8b6e4e; color: #ffffff; }
+
+QRadioButton::indicator {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #a89880;
+    border-radius: 8px;
+    background-color: #f7f0e2;
+}
+QRadioButton::indicator:checked {
+    border: 1px solid #8b6e4e;
+    background-color: qradialgradient(cx: 0.5, cy: 0.5, radius: 0.5,
+                                      fx: 0.5, fy: 0.5,
+                                      stop: 0 #8b6e4e, stop: 0.5 #8b6e4e,
+                                      stop: 0.55 #f7f0e2, stop: 1 #f7f0e2);
+}
+QRadioButton::indicator:disabled {
+    border: 1px solid #cfc0a8;
+    background-color: #f0e6d3;
+}
+QRadioButton:disabled {
+    color: #a89880;
+}
+
+QDockWidget {
+    border: 1px solid #cfc0a8;
+}
+QDockWidget::title {
+    background-color: #e4d8c3;
+    padding: 6px;
+}
+
+QProgressBar {
+    border: 1px solid #c5b59c;
+    border-radius: 4px;
+    text-align: center;
+    background-color: #f7f0e2;
+}
+QProgressBar::chunk { background-color: #8b6e4e; }
+
+QToolTip {
+    background-color: #f7f0e2;
+    color: #3b2e1e;
+    border: 1px solid #8b6e4e;
+}
+
+QTableView {
+    background-color: #faf5ea;
+    alternate-background-color: #f0eadb;
+    gridline-color: #ddd4c2;
+    selection-background-color: #8b6e4e;
+    selection-color: #ffffff;
+    border: none;
+}
+QHeaderView::section {
+    background-color: #e4d8c3;
+    color: #3b2e1e;
+    border: none;
+    border-right: 1px solid #cfc0a8;
+    border-bottom: 1px solid #cfc0a8;
+    padding: 4px 8px;
+}
+
+QListWidget {
+    background-color: #faf5ea;
+    border: none;
+}
+QListWidget::item {
+    padding: 4px 6px;
+}
+QListWidget::item:selected {
+    background-color: #8b6e4e;
+    color: #ffffff;
+}

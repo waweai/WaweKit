@@ -1,0 +1,18 @@
+This directory vendors 3Dmol.js (file: 3Dmol-min.js), a third-party library,
+used by Wawekit's conformer viewer to render interactive 3D molecular
+structures inside a QWebEngine view (fully offline — no network or CDN).
+
+3Dmol.js
+  Homepage:  https://3dmol.csb.pitt.edu/
+  Source:    https://github.com/3dmol/3Dmol.js
+  License:   BSD 3-Clause License
+  Copyright: (c) 2014, University of Pittsburgh and contributors
+
+3Dmol.js is distributed under the BSD 3-Clause License, which is compatible
+with Wawekit's MIT license. The full 3Dmol.js license text is available in the
+project's source repository linked above. Wawekit does not modify the vendored
+build; it is included verbatim so the application works without internet access.
+
+Reference:
+  Nicholas Rego and David Koes, "3Dmol.js: molecular visualization with WebGL",
+  Bioinformatics (2015) 31 (8): 1322-1324, doi:10.1093/bioinformatics/btu829.

@@ -1,0 +1,131 @@
+/* Wawekit — Light theme
+   Mirror of dark.qss with a light palette so the two stay structurally in sync. */
+
+QWidget {
+    background-color: #f4f5f7;
+    color: #1e1f22;
+    font-family: "Segoe UI", "Cantarell", "Helvetica Neue", sans-serif;
+    font-size: 10pt;
+}
+
+QMainWindow, QDialog {
+    background-color: #f4f5f7;
+}
+
+QMenuBar {
+    background-color: #e7e9ec;
+    border-bottom: 1px solid #d0d3d8;
+}
+QMenuBar::item:selected {
+    background-color: #3a6ea5;
+    color: #ffffff;
+}
+
+QMenu {
+    background-color: #ffffff;
+    border: 1px solid #d0d3d8;
+}
+QMenu::item {
+    padding: 6px 36px 6px 20px;
+}
+QMenu::item:selected {
+    background-color: #3a6ea5;
+    color: #ffffff;
+}
+
+QToolBar {
+    background-color: #e7e9ec;
+    border-bottom: 1px solid #d0d3d8;
+    spacing: 4px;
+    padding: 3px;
+}
+
+QStatusBar {
+    background-color: #e7e9ec;
+    border-top: 1px solid #d0d3d8;
+}
+
+QPushButton {
+    background-color: #ffffff;
+    border: 1px solid #c3c7cd;
+    border-radius: 4px;
+    padding: 5px 12px;
+}
+QPushButton:hover { background-color: #eef0f3; }
+QPushButton:pressed { background-color: #3a6ea5; color: #ffffff; }
+
+/* Radio buttons — drawn explicitly to match the dark theme, where Qt's native
+   checked dot renders invisibly. Kept symmetrical so the two themes agree.
+   (Checkboxes are unaffected and are deliberately left native.) */
+QRadioButton::indicator {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #a8adb5;
+    border-radius: 8px;
+    background-color: #ffffff;
+}
+QRadioButton::indicator:checked {
+    border: 1px solid #3a6ea5;
+    background-color: qradialgradient(cx: 0.5, cy: 0.5, radius: 0.5,
+                                      fx: 0.5, fy: 0.5,
+                                      stop: 0 #3a6ea5, stop: 0.5 #3a6ea5,
+                                      stop: 0.55 #ffffff, stop: 1 #ffffff);
+}
+QRadioButton::indicator:disabled {
+    border: 1px solid #d0d3d8;
+    background-color: #f4f5f7;
+}
+QRadioButton:disabled {
+    color: #a8adb5;
+}
+
+QDockWidget {
+    border: 1px solid #d0d3d8;
+}
+QDockWidget::title {
+    background-color: #e7e9ec;
+    padding: 6px;
+}
+
+QProgressBar {
+    border: 1px solid #c3c7cd;
+    border-radius: 4px;
+    text-align: center;
+    background-color: #ffffff;
+}
+QProgressBar::chunk { background-color: #3a6ea5; }
+
+QToolTip {
+    background-color: #ffffff;
+    color: #1e1f22;
+    border: 1px solid #3a6ea5;
+}
+
+QTableView {
+    background-color: #ffffff;
+    alternate-background-color: #f0f2f5;
+    gridline-color: #dfe2e7;
+    selection-background-color: #3a6ea5;
+    selection-color: #ffffff;
+    border: none;
+}
+QHeaderView::section {
+    background-color: #e7e9ec;
+    color: #1e1f22;
+    border: none;
+    border-right: 1px solid #d0d3d8;
+    border-bottom: 1px solid #d0d3d8;
+    padding: 4px 8px;
+}
+
+QListWidget {
+    background-color: #ffffff;
+    border: none;
+}
+QListWidget::item {
+    padding: 4px 6px;
+}
+QListWidget::item:selected {
+    background-color: #3a6ea5;
+    color: #ffffff;
+}

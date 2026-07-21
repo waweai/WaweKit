@@ -1,0 +1,118 @@
+# pyproject.toml — the single source of truth for building and tooling.
+# Modern Python packaging (PEP 517/518/621) reads project metadata from here.
+
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "wawekit"
+version = "0.1.0"
+description = "Professional open-source desktop cheminformatics toolkit."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "The Wawekit Authors" }]
+keywords = ["cheminformatics", "rdkit", "pyside6", "drug-discovery", "desktop"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: X11 Applications :: Qt",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Chemistry",
+]
+
+# Runtime dependencies: the headless science layer only.
+#
+# The desktop UI is deliberately NOT a core dependency. Every analysis service
+# — standardization, the reproducibility auditor, descriptors, fingerprints,
+# similarity, scaffolds, clustering, chemical-space projection, substructure
+# search, alerts, IO and reporting — imports without Qt, so `pip install
+# wawekit` gives a usable library and CLI without pulling a ~150 MB GUI
+# framework someone scripting in a notebook will never open. Only
+# `core.paths` and `services.workers` (app config directories and the Qt
+# thread pool) require Qt, and both are GUI infrastructure rather than
+# science. Install `wawekit[gui]` for the desktop application.
+dependencies = [
+    "rdkit>=2024.3.1",
+    "numpy>=1.26",
+    "pandas>=2.2",
+    # Chemical-space projection and clustering are headless services.
+    "scikit-learn>=1.4",
+    # Report generation — PDF output, no Qt involved.
+    "reportlab>=4.1",
+]
+
+[project.optional-dependencies]
+# The desktop application: Qt plus the plotting backend the panels embed.
+gui = [
+    "PySide6>=6.6",
+    "matplotlib>=3.8",
+]
+# Third-party standardizers the reproducibility auditor can compare against.
+# Optional because the auditor is fully usable without them — they widen a
+# comparison from "protocols we compose" to "pipelines other people deployed",
+# and a user who only wants the former should not have to install them.
+standardizers = [
+    "chembl_structure_pipeline>=1.2",
+    "molvs>=0.1.1",
+]
+# Installed with:  pip install -e ".[dev]"
+# Includes [gui] because the test suite covers the desktop application.
+dev = [
+    "wawekit[gui,standardizers]",
+    "pytest>=8.0",
+    "pytest-qt>=4.4",
+    "black>=24.0",
+    "ruff>=0.5",
+    "mkdocs>=1.6",
+    # Module 17: freezes the app into a distributable desktop bundle.
+    "pyinstaller>=6.6",
+]
+# Heavier scientific extras added in later modules (export/reporting).
+science = [
+    "plotly>=5.20",
+    "openpyxl>=3.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/waweai/WaweKit"
+Repository = "https://github.com/waweai/WaweKit"
+Documentation = "https://github.com/waweai/WaweKit/blob/main/docs/FEATURES.md"
+Changelog = "https://github.com/waweai/WaweKit/blob/main/CHANGELOG.md"
+
+# Console/GUI launcher: after `pip install`, users run `wawekit`.
+[project.scripts]
+wawekit = "wawekit.app:run"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/wawekit"]
+
+# --- Tooling configuration (kept here so there is one config file) ---------
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+# The learning/ folder holds standalone demo scripts and abstracts, not package
+# source — it is documentation, so it is not held to the source lint rules.
+extend-exclude = ["learning"]
+
+[tool.ruff.lint]
+# E/F: pyflakes+pycodestyle, I: isort, UP: pyupgrade, B: bugbear, D: docstrings.
+select = ["E", "F", "I", "UP", "B", "D"]
+# D203/D213: conflicting docstring-style pairs — we use the numpy convention.
+# D107: __init__ args are documented in the class docstring (numpy style).
+ignore = ["D203", "D213", "D107"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D"]  # tests need not be docstring-complete.
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

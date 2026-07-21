@@ -1,0 +1,10 @@
+CC(=O)Oc1ccccc1C(=O)O aspirin
+Cn1cnc2c1c(=O)n(C)c(=O)n2C caffeine
+CC(C)Cc1ccc(cc1)C(C)C(=O)O ibuprofen
+CC(=O)Nc1ccc(O)cc1 paracetamol
+Cc1ccc(cc1)S(=O)(=O)N tosylamide
+c1ccc2c(c1)ccc3c2cccc3 anthracene
+CC(C)NCC(O)c1ccc(O)c(O)c1 isoprenaline
+Clc1ccccc1-c1nc2ccccc2[nH]1 benzimidazole-Cl
+NOT_A_SMILES broken_example
+CCN(CC)CCNC(=O)c1ccc(N)cc1 procainamide

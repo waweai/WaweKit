@@ -1,0 +1,46 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Packaging / build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# PyInstaller (wawekit.spec is hand-written and deliberately tracked — only
+# ignore auto-generated ones some other tool might drop elsewhere)
+*.spec
+!/wawekit.spec
+*.manifest
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+
+# MkDocs
+site/
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# App runtime data (should live in OS dirs, but ignore stray local copies)
+*.log
+
+# Research/development notes, manuscript drafts and raw benchmark data.
+# Kept locally and in the private development history; not part of the
+# public app repository (this repo mirrors github.com/waweai/WaweKit,
+# which is app-only) so it is untracked here rather than pushed.
+/learning/

@@ -1,0 +1,477 @@
+<h1 align="center"><img src="logo.png" width="220"></h1>
+<h1 align="center">WaweKit User Manual</h1>
+<p align="center"><i>A friendly, complete guide to every feature — no chemistry-software
+experience needed.</i></p>
+
+<hr>
+
+<h2>Contents</h2>
+<ol>
+  <li><a href="#welcome">Welcome — what is WaweKit?</a></li>
+  <li><a href="#quickstart">Quick start: your first 5 minutes</a></li>
+  <li><a href="#window">The main window, piece by piece</a></li>
+  <li><a href="#open">Opening &amp; converting molecule files</a></li>
+  <li><a href="#filter">Filtering the table (quick-filter &amp; property filters)</a></li>
+  <li><a href="#standardize">Standardize — clean up your structures</a></li>
+  <li><a href="#descriptors">Descriptors &amp; PAINS alerts — properties &amp; warnings</a></li>
+  <li><a href="#fingerprints">Fingerprints — preparing for similarity work</a></li>
+  <li><a href="#similarity">Similarity search — "find more like this one"</a></li>
+  <li><a href="#scaffolds">Scaffold analysis — group by core structure</a></li>
+  <li><a href="#conformers">Conformers &amp; Standalone 3D Viewer — 3D shapes</a></li>
+  <li><a href="#space">Chemical space — a map of your dataset</a></li>
+  <li><a href="#clustering">Clustering — find the families</a></li>
+  <li><a href="#substructure">Substructure search — "which contain this fragment?"</a></li>
+  <li><a href="#batch">Batch processing — run a whole pipeline</a></li>
+  <li><a href="#reports">Reports — share your results</a></li>
+  <li><a href="#settings">Settings</a></li>
+  <li><a href="#research">Research: Reproducibility Audit</a></li>
+  <li><a href="#plugins">Plugins</a></li>
+  <li><a href="#shortcuts">All keyboard shortcuts</a></li>
+  <li><a href="#trouble">Tips &amp; troubleshooting</a></li>
+</ol>
+
+<hr>
+
+<a name="welcome"></a>
+<h2>1. Welcome — what is WaweKit?</h2>
+<p>WaweKit is a desktop application for working with collections of molecules.
+You load a file of structures, and WaweKit helps you <b>clean them, measure
+them, compare them, group them, view them in 3D, and report on them</b> — the
+everyday toolkit of early drug discovery and cheminformatics research.</p>
+<p>Everything runs <b>on your computer</b>: no account, no upload, no internet
+needed. Long operations run in the background, so the app never freezes — watch
+the progress bar in the bottom-right corner.</p>
+
+<a name="quickstart"></a>
+<h2>2. Quick start: your first 5 minutes</h2>
+<ol>
+  <li><b>Open a file.</b> Use <code>File → Open Molecules…</code>
+      (<code>Ctrl+O</code>) or simply <b>drag a file onto the window</b>.
+      Try one of the demo files in the <code>samples/</code> folder, e.g.
+      <code>demo_similarity.smi</code>.</li>
+  <li><b>Click any row.</b> The <b>Structure panel</b> (right side) shows a
+      large drawing of that molecule with its properties.</li>
+  <li><b>Compute descriptors.</b> Press <code>Ctrl+D</code>. New columns appear:
+      MW, LogP, TPSA and more.</li>
+  <li><b>Filter.</b> Type <code>MW &lt; 300</code> in the filter box above the
+      table and press Enter. Only light molecules remain. Clear the box to see
+      everything again.</li>
+  <li><b>Explore.</b> Every other feature lives in the <b>Chemistry</b> menu —
+      each one is described below.</li>
+</ol>
+
+<a name="window"></a>
+<h2>3. The main window, piece by piece</h2>
+<p><img src="main_window.png"></p>
+<ul>
+  <li><b>Molecule table (centre)</b> — one row per molecule: a structure
+      thumbnail, name, SMILES, and a column for every value you compute later.
+      <b>Click a column header to sort.</b> Right-click a row for copy/remove
+      and quick similarity search.</li>
+  <li><b>Workspace panel (left)</b> — a running log of what you've done:
+      files loaded, standardizations, searches, batches, reports.</li>
+  <li><b>Scaffolds tab (left)</b> — appears behind the Workspace tab; used by
+      scaffold analysis (section 10).</li>
+  <li><b>Structure panel (right)</b> — a large, exportable drawing of the
+      selected molecule (PNG/SVG export buttons included).</li>
+  <li><b>Property Filters tab (left)</b> — appears behind Workspace/Scaffolds;
+      real-time min/max range sliders for every computed descriptor
+      (section 5).</li>
+  <li><b>Conformers tab (right)</b> — the interactive 3D viewer for generated
+      conformer ensembles (section 11).</li>
+  <li><b>3D Viewer tab (right)</b> — an on-the-fly 3D view of whatever molecule
+      is selected, no generation step needed (section 11).</li>
+  <li><b>Status bar (bottom)</b> — messages, the progress bar, and the Cancel
+      button during batch runs.</li>
+  <li><b>Look &amp; Feel</b> — 8 themes to choose from; press
+      <code>Ctrl+T</code> any time to cycle to the next one (section 11).</li>
+  <li><b>View menu</b> — show or hide any panel (Workspace, Structure,
+      Scaffolds, Property Filters, Conformers, 3D Viewer, Chemical Space,
+      Reproducibility). Closed a panel by accident? It's here.</li>
+</ul>
+
+<a name="open"></a>
+<h2>4. Opening &amp; converting molecule files</h2>
+<p><b>What you can open:</b></p>
+<table border="1" cellpadding="6" cellspacing="0">
+  <tr><th>Format</th><th>Extensions</th><th>Typically contains</th></tr>
+  <tr><td>SDF</td><td><code>.sdf</code></td><td>Many molecules + data fields (the industry workhorse)</td></tr>
+  <tr><td>MOL</td><td><code>.mol</code></td><td>A single molecule</td></tr>
+  <tr><td>SMILES</td><td><code>.smi</code>, <code>.smiles</code>, <code>.txt</code></td><td>One molecule per line: <code>SMILES&nbsp;name</code></td></tr>
+</table>
+<p><b>How:</b> <code>File → Open Molecules…</code>, or drag one or more files
+anywhere onto the window. Files are loaded one at a time with progress; loading
+more files <b>adds</b> to the table (it does not replace what's there).</p>
+<p><b>If some records are broken</b> (corrupt entries, unreadable SMILES), the
+good ones still load — a summary dialog lists exactly which entries failed and
+why. One bad molecule never aborts a load.</p>
+<p><b>Converting formats:</b> WaweKit features a built-in file format converter.
+Go to <code>File → Convert Format…</code> (<code>Ctrl+Shift+V</code>) to convert between
+<b>CSV, SDF, MOL, and SMILES</b> formats without loading them into the main workspace.
+Select the input file, choose the target output format, specify the output location, and click <i>Convert</i>.
+A conversion report lists total records processed, successes, and syntax warnings (such as truncating a multi-molecule dataset to a single-molecule MOL format).</p>
+
+<a name="filter"></a>
+<h2>5. Filtering the table (quick-filter &amp; property filters)</h2>
+<p><img src="filter_box.png"></p>
+<p>The box above the table understands two kinds of input:</p>
+<table border="1" cellpadding="6" cellspacing="0">
+  <tr><th>You type</th><th>You get</th></tr>
+  <tr><td><code>amine</code></td><td>Rows whose <b>name or SMILES</b> contains "amine"</td></tr>
+  <tr><td><code>MW &lt; 500</code></td><td>Molecules lighter than 500 (needs descriptors computed)</td></tr>
+  <tr><td><code>LogP &gt;= 2</code></td><td>LogP of at least 2</td></tr>
+  <tr><td><code>Lipinski = 0</code></td><td>No Rule-of-5 violations at all</td></tr>
+  <tr><td><code>Sim &gt;= 0.7</code></td><td>Similarity score ≥ 0.7 (after a similarity search)</td></tr>
+</table>
+<p>Numeric tokens: <code>MW, LogP, TPSA, HBD, HBA, RotB, Rings, Lipinski,
+Sim</code>. Operators: <code>&lt; &lt;= &gt; &gt;= = !=</code>. Clear the box to
+remove the filter. Rows without the value yet are hidden by numeric filters —
+compute descriptors first.</p>
+<h3>Property Filters Panel</h3>
+<p>In addition to the quick-filter box, WaweKit provides an interactive <b>Property Filters</b> panel (tabbed with Workspace and Scaffolds on the left side of the window).
+Once you compute descriptors (<code>Ctrl+D</code>), this panel automatically discovers the minimum and maximum ranges of the active dataset and constructs range inputs for each property.
+Adjust the min/max values to filter the table rows in real-time. Clearing the dataset or recalculating descriptors automatically updates the filter ranges.</p>
+
+<a name="standardize"></a>
+<h2>6. Standardize — clean up your structures</h2>
+<p><img src="standardize.png"></p>
+<p><b>What it does:</b> real-world files are messy — salts
+(<code>·HCl</code>), charged forms, duplicate entries, inconsistent tautomers.
+Standardization cleans every structure the same way so later numbers are
+comparable.</p>
+<p><b>When to use it:</b> right after loading, before computing anything else.</p>
+<p><b>How:</b></p>
+<ol>
+  <li><code>Chemistry → Standardize…</code> (<code>Ctrl+Shift+S</code>).</li>
+  <li>Tick the steps you want: strip salts (keep the largest fragment),
+      neutralize charges, canonicalize tautomers, remove duplicates.</li>
+  <li>Click OK. A report dialog then lists <b>every change made to every
+      molecule</b> — nothing happens silently.</li>
+</ol>
+<p><b>Good to know:</b> standardizing <b>replaces</b> the dataset, so earlier
+computed values (descriptors, fingerprints, maps) are cleared — recompute them
+on the cleaned structures. That is deliberate: numbers computed on dirty
+structures should not survive next to clean ones.</p>
+
+<a name="descriptors"></a>
+<h2>7. Descriptors &amp; PAINS alerts — properties &amp; warnings</h2>
+<p><img src="descriptors.png"></p>
+<p><b>What it does:</b> computes the classic property panel for every molecule:</p>
+<table border="1" cellpadding="6" cellspacing="0">
+  <tr><th>Column</th><th>Meaning</th><th>Rule-of-thumb</th></tr>
+  <tr><td>MW</td><td>Molecular weight (g/mol)</td><td>≤ 500 (Lipinski)</td></tr>
+  <tr><td>LogP</td><td>Fat- vs water-loving (lipophilicity)</td><td>≤ 5 (Lipinski)</td></tr>
+  <tr><td>TPSA</td><td>Polar surface area (Å²)</td><td>≤ 140 favours oral absorption</td></tr>
+  <tr><td>HBD / HBA</td><td>H-bond donors / acceptors</td><td>≤ 5 / ≤ 10 (Lipinski)</td></tr>
+  <tr><td>RotB</td><td>Rotatable bonds (flexibility)</td><td>lower = more rigid</td></tr>
+  <tr><td>Rings</td><td>Ring count</td><td>—</td></tr>
+  <tr><td>Lipinski</td><td>How many of the 4 limits are broken (0–4)</td><td>≤ 1 = "passes"</td></tr>
+</table>
+<p><b>How:</b> <code>Chemistry → Compute Descriptors</code>
+(<code>Ctrl+D</code>). Sort any column by clicking its header; hover a header
+for an explanation; filter with the quick-filter box (section 5).</p>
+<h3>PAINS &amp; Drug-Likeness Alerts</h3>
+<p>WaweKit automatically audits loaded structures for common biological assay interference and toxicity alerts (using standard <b>PAINS</b>, Brenk, and NIH catalogs).
+Molecules triggering structural alerts display a warning badge (e.g. <code>⚠️ 1</code>) in the <b>Alerts</b> column.
+Hovering over the cell displays a detailed list of the triggered warnings.
+Additionally, selecting a molecule with alerts displays details of the warnings in the <b>Structure panel</b> next to the molecular formula.</p>
+
+<a name="fingerprints"></a>
+<h2>8. Fingerprints — preparing for similarity work</h2>
+<p><img src="fingerprints.png"></p>
+<p><b>What it does:</b> encodes each structure as a "bar-code" of bits so
+molecules can be compared quickly. Similarity search, chemical space, and
+clustering all build on fingerprints.</p>
+<p><b>Which kind?</b></p>
+<ul>
+  <li><b>Morgan</b> (default, radius 2, 2048 bits) — the field's standard
+      choice. Use this unless you have a reason not to.</li>
+  <li><b>MACCS</b> — 166 fixed yes/no structural questions; interpretable.</li>
+  <li><b>RDKit</b> — path-based alternative.</li>
+</ul>
+<p><b>How:</b> <code>Chemistry → Compute Fingerprints…</code>
+(<code>Ctrl+Shift+F</code>), pick the kind, OK. A Fingerprint column appears
+(e.g. "Morgan · 24 on").</p>
+<p><b>Good to know:</b> you usually don't need this menu at all — similarity
+search, chemical space and clustering compute fingerprints automatically if
+missing. Two fingerprints built with different settings are never mixed:
+WaweKit recomputes rather than silently comparing incomparable codes.</p>
+
+<a name="similarity"></a>
+<h2>9. Similarity search — "find more like this one"</h2>
+<p><img src="similarity.png"></p>
+<p><b>What it does:</b> ranks your whole dataset by how similar each molecule
+is to one query molecule — the classic "my compound works, what else do I have
+that looks like it?" question.</p>
+<p><b>How:</b></p>
+<ol>
+  <li>Either <b>right-click a molecule → similarity search</b>, or
+      <code>Chemistry → Similarity Search…</code> (<code>Ctrl+Shift+M</code>)
+      and paste any SMILES as the query (it doesn't have to be in your
+      dataset).</li>
+  <li>Pick the metric — <b>Tanimoto</b> is the standard (published thresholds
+      like "≥ 0.85 = very similar" assume it).</li>
+  <li>Click Search. The table sorts best-match-first; the query row is shown
+      in <b>bold</b> if it's in the dataset.</li>
+</ol>
+<p><b>Reading the numbers:</b> 1.00 = identical fingerprint; above ~0.85 = very
+similar; below ~0.3 = mostly unrelated. Hover the Similarity column for full
+context ("Tanimoto vs aspirin · Morgan r2 · 2048b") — a score is only
+meaningful against that context. Keep just the good hits with a filter like
+<code>Sim &gt;= 0.7</code>.</p>
+
+<a name="scaffolds"></a>
+<h2>10. Scaffold analysis — group by core structure</h2>
+<p><img src="scaffolds.png"></p>
+<p><b>What it does:</b> strips each molecule down to its ring framework (its
+<i>Bemis–Murcko scaffold</i>) and groups the dataset by it — answering "how
+many distinct chemical series do I actually have?"</p>
+<p><b>How:</b></p>
+<ol>
+  <li><code>Chemistry → Analyze Scaffolds</code> (<code>Ctrl+Shift+A</code>).</li>
+  <li>The <b>Scaffolds panel</b> (left, behind Workspace) opens: a diversity
+      headline plus every scaffold ranked by how many molecules share it.</li>
+  <li><b>Click a scaffold</b> to filter the table to just its members. Click
+      it again (or Clear) to unfilter.</li>
+  <li>Toggle <b>Exact / Generic</b>: generic ignores atom types, so benzene
+      and pyridine cores group together — coarser families.</li>
+</ol>
+<p><b>Good to know:</b> molecules with no rings are grouped as "(acyclic)" —
+they have no scaffold, and that itself is worth knowing.</p>
+
+<a name="conformers"></a>
+<h2>11. Conformers &amp; Standalone 3D Viewer — 3D shapes</h2>
+<p><img src="conformers_3d.png"></p>
+<p><b>What it does:</b> molecules are flexible — the flat drawing is only a
+summary. This generates several plausible 3D shapes (<i>conformers</i>) per
+molecule, ranks them by energy, and shows them in a rotatable 3D viewer.</p>
+<p><b>How:</b></p>
+<ol>
+  <li><b>Select the molecules you want</b> in the table (3D generation is the
+      heaviest computation — with nothing selected it runs on everything).</li>
+  <li><code>Chemistry → Generate Conformers…</code>
+      (<code>Ctrl+Shift+C</code>). The defaults (10 conformers, MMFF94) are
+      sensible; just click OK.</li>
+  <li>The <b>Conformers tab</b> (right) opens: <b>drag to rotate, scroll to
+      zoom</b>. The table below lists each conformer's energy, ΔE from the
+      best, and RMSD; click one to view it.</li>
+  <li><b>Export SDF</b> saves all 3D coordinates for use in docking or other
+      tools.</li>
+</ol>
+<p><b>Good to know:</b> the lowest-energy conformer is listed first. If MMFF94
+can't handle a molecule, WaweKit automatically falls back to UFF and says so.</p>
+<h3>Standalone 3D Viewer</h3>
+<p>Beside conformer ensembles, you can view any selected molecule in interactive 3D dynamically using the <b>3D Viewer</b> panel (tabbed with Structure and Conformers on the right).
+When a molecule is selected in the table, the 3D Viewer generates an on-the-fly 3D conformation (using RDKit's ETKDGv3 and MMFF optimization) so you can immediately view and rotate its structure.
+Use the dropdown inside the dock to switch representation styles (Ball &amp; Stick, Stick, Space-fill, Wireframe).</p>
+<h3>Look &amp; Feel Themes</h3>
+<p>You can customize WaweKit's visual style. Choose from 8 named themes matching your visual preferences:
+Night (default dark), Graphite, Gray, Moderate, Light, Creme Coffee, Sahara, and Nebula.
+Select these via <b>Help → Look &amp; Feel</b>, or press <code>Ctrl+T</code> to cycle to the next theme. Links and text automatically adjust to remain fully legible across all themes.</p>
+
+<a name="space"></a>
+<h2>12. Chemical space — a map of your dataset</h2>
+<p><img src="chemical_space.png"></p>
+<p><b>What it does:</b> places every molecule as a point on a 2D map where
+similar molecules land near each other — the fastest way to <i>see</i> your
+dataset's structure: its families, its outliers, its coverage.</p>
+<p><b>How:</b></p>
+<ol>
+  <li><code>Chemistry → Chemical Space…</code> (<code>Ctrl+Shift+P</code>).</li>
+  <li>Pick the method: <b>PCA</b> (fast, stable, distances meaningful
+      globally) or <b>t-SNE</b> (slower, better at separating clusters;
+      distances between far-apart groups are not meaningful).</li>
+  <li>The map opens along the bottom. <b>Hover</b> a point to identify it;
+      <b>click</b> or <b>lasso-drag</b> to select — the table selection follows,
+      and vice versa.</li>
+  <li><b>Colour by</b> any descriptor (or cluster id) with the dropdown —
+      e.g. colour by LogP to see where the greasy molecules live.</li>
+  <li>The toolbar exports the plot as PNG/PDF/SVG for slides and papers.</li>
+</ol>
+
+<a name="clustering"></a>
+<h2>13. Clustering — find the families</h2>
+<p><img src="clustering.png"></p>
+<p><b>What it does:</b> automatically groups similar molecules and writes each
+group's number into a <b>Cluster</b> column. Where scaffold analysis groups by
+exact core, clustering groups by overall similarity.</p>
+<p><b>How:</b></p>
+<ol>
+  <li><code>Chemistry → Cluster Molecules…</code> (<code>Ctrl+Shift+K</code>).</li>
+  <li>Pick the method:
+      <ul>
+        <li><b>Butina</b> — the cheminformatics classic. You set a similarity
+            cutoff (e.g. 0.35); the algorithm decides how many clusters exist.
+            Lower cutoff → fewer, looser clusters.</li>
+        <li><b>K-Means</b> — you say how many clusters you want; it finds the
+            best split into exactly that many.</li>
+      </ul></li>
+  <li>Cluster 0 is always the largest family. Sort the Cluster column to read
+      the dataset family-by-family.</li>
+  <li>If a chemical-space map is open, it <b>automatically recolours by
+      cluster</b> — each family lights up in its own colour (the picture
+      above).</li>
+</ol>
+
+<a name="substructure"></a>
+<h2>14. Substructure search — "which molecules contain this fragment?"</h2>
+<p><img src="substructure.png"></p>
+<p><b>What it does:</b> finds every molecule containing a fragment you specify,
+and <b>highlights the matching atoms</b> in every thumbnail and in the
+Structure panel.</p>
+<p><b>How:</b></p>
+<ol>
+  <li><code>Chemistry → Substructure Search…</code>
+      (<code>Ctrl+Shift+U</code>).</li>
+  <li>Type the fragment as <b>SMILES</b> (a real molecule piece, e.g.
+      <code>c1ccncc1</code> for a pyridine ring) or <b>SMARTS</b> (a pattern
+      language, e.g. <code>[OH]</code> for any hydroxyl). The dialog validates
+      as you type and won't search an invalid query.</li>
+  <li>Tick <i>"show only matches"</i> to filter the table down to hits, or
+      leave it off to just mark them (✓ column).</li>
+</ol>
+<p><b>Good to know:</b> the ✓ column shows "✓ 2" when the fragment occurs twice
+in one molecule. The highlight stays until your next search or until the
+dataset changes.</p>
+
+<a name="batch"></a>
+<h2>15. Batch processing — run a whole pipeline</h2>
+<p><img src="batch.png"></p>
+<p><b>What it does:</b> runs several steps back-to-back over the whole dataset
+— standardize → descriptors → fingerprints → scaffolds → clustering → export —
+so a routine workflow is one dialog, not six menus.</p>
+<p><b>How:</b></p>
+<ol>
+  <li><code>Chemistry → Batch Processing…</code> (<code>Ctrl+B</code>).</li>
+  <li>Tick the steps you want. Steps always run in the fixed, chemically
+      sensible order shown.</li>
+  <li>Optionally export the result to <b>CSV</b> (spreadsheet: names, SMILES,
+      all computed values) or <b>SDF</b> (structures + values as data fields,
+      for other chemistry software).</li>
+  <li>Long batch? A <b>Cancel</b> button appears in the status bar. Cancelling
+      stops cleanly at the next safe point — work finished so far is kept.</li>
+</ol>
+
+<a name="reports"></a>
+<h2>16. Reports — share your results</h2>
+<p><img src="report.png"></p>
+<p><b>What it does:</b> produces a polished, self-contained <b>HTML</b> and/or
+<b>PDF</b> summary of your dataset: headline stats, a descriptor min/mean/max
+table, Lipinski pass count, and a grid of structures. The HTML file is a single
+file — email it, drop it in a shared folder, or print it; no software needed to
+view it.</p>
+<p><b>How:</b></p>
+<ol>
+  <li><code>File → Generate Report…</code> (<code>Ctrl+R</code>).</li>
+  <li>Set a title, tick HTML and/or PDF, choose where to save.</li>
+  <li>Compute descriptors <i>before</i> reporting if you want the statistics
+      table included — the report shows what has been computed and stays
+      silent about what hasn't.</li>
+  <li>When it finishes, click <b>Open</b> to view immediately.</li>
+</ol>
+
+<a name="settings"></a>
+<h2>17. Settings</h2>
+<p><img src="settings.png"></p>
+<p><code>File → Settings…</code> (<code>Ctrl+,</code>):</p>
+<ul>
+  <li><b>Theme</b> — any of the 8 Look &amp; Feel styles (section 11); also
+      cyclable any time with <code>Ctrl+T</code>, and selectable directly from
+      <code>Help → Look &amp; Feel</code>. Your choice is remembered across
+      restarts.</li>
+  <li><b>Log level</b> — how much detail the log file records (Debug helps
+      when reporting a problem).</li>
+  <li><b>Remember window layout</b> — restore window size and panel
+      arrangement on next start.</li>
+</ul>
+<p>Settings persist in a small human-readable file in your user config folder;
+<i>Restore Defaults</i> puts everything back.</p>
+
+<a name="research"></a>
+<h2>18. Research: Reproducibility Audit</h2>
+<p><img src="reproducibility.png"></p>
+<p><b>What it does:</b> a research-grade diagnostic unique to WaweKit.
+Different software cleans ("standardizes") the same molecule <i>differently</i>
+— so the same compound can end up with different identities in different
+databases, silently. The audit runs <b>three standardization recipes</b> over
+your dataset and reports:</p>
+<ul>
+  <li><b>Reproducibility scores</b> — what fraction of your molecules come out
+      identical under all recipes (measured two ways: by canonical SMILES and
+      by InChIKey — they can genuinely disagree, which is itself a finding).</li>
+  <li><b>Agreement heatmap</b> — which recipe pairs agree most.</li>
+  <li><b>Cause chart</b> — <i>which cleaning step</i> (salt removal, charge
+      neutralization, tautomer choice…) is responsible for each disagreement.</li>
+  <li><b>Labile-molecule list</b> — exactly which of your molecules are
+      pipeline-dependent. If one of them is your lead compound, you want to
+      know.</li>
+</ul>
+<p><b>How:</b> <code>Research → Reproducibility Audit…</code>
+(<code>Ctrl+Shift+R</code>), keep all three protocols ticked, OK. "Attribute
+causes" is slower but produces the cause chart. Protocols that fail on a
+molecule are reported as <i>failures</i>, separately — a failure is not counted
+as divergence.</p>
+
+<a name="plugins"></a>
+<h2>19. Plugins</h2>
+<p>WaweKit can be extended by third-party plugins. Installing one is just
+<code>pip install &lt;plugin&gt;</code> in the same Python environment — on next
+start it appears in the <b>Plugins</b> menu automatically. A misbehaving plugin
+is skipped with a log message; it can never prevent WaweKit from starting.
+Developers: see <code>examples/example-plugin/</code> in the repository for a
+complete working template.</p>
+
+<a name="shortcuts"></a>
+<h2>20. All keyboard shortcuts</h2>
+<table border="1" cellpadding="6" cellspacing="0">
+  <tr><th>Shortcut</th><th>Action</th></tr>
+  <tr><td><code>Ctrl+O</code></td><td>Open molecule files</td></tr>
+  <tr><td><code>Ctrl+D</code></td><td>Compute descriptors</td></tr>
+  <tr><td><code>Ctrl+Shift+S</code></td><td>Standardize</td></tr>
+  <tr><td><code>Ctrl+Shift+F</code></td><td>Compute fingerprints</td></tr>
+  <tr><td><code>Ctrl+Shift+M</code></td><td>Similarity search</td></tr>
+  <tr><td><code>Ctrl+Shift+A</code></td><td>Analyze scaffolds</td></tr>
+  <tr><td><code>Ctrl+Shift+C</code></td><td>Generate conformers (3D)</td></tr>
+  <tr><td><code>Ctrl+Shift+P</code></td><td>Chemical space map</td></tr>
+  <tr><td><code>Ctrl+Shift+K</code></td><td>Cluster molecules</td></tr>
+  <tr><td><code>Ctrl+Shift+U</code></td><td>Substructure search</td></tr>
+  <tr><td><code>Ctrl+B</code></td><td>Batch processing</td></tr>
+  <tr><td><code>Ctrl+Shift+V</code></td><td>Convert molecule formats</td></tr>
+  <tr><td><code>Ctrl+R</code></td><td>Generate report</td></tr>
+  <tr><td><code>Ctrl+Shift+R</code></td><td>Reproducibility audit (Research)</td></tr>
+  <tr><td><code>Ctrl+,</code></td><td>Settings</td></tr>
+  <tr><td><code>Ctrl+T</code></td><td>Cycle to the next Look &amp; Feel theme</td></tr>
+  <tr><td><code>F1</code></td><td>This manual</td></tr>
+</table>
+
+<a name="trouble"></a>
+<h2>21. Tips &amp; troubleshooting</h2>
+<ul>
+  <li><b>A menu item is greyed out.</b> Either no molecules are loaded yet, or
+      another operation is still running — wait for the progress bar to finish.</li>
+  <li><b>My numeric filter shows nothing.</b> Numeric filters need the value to
+      exist: compute descriptors first (<code>Ctrl+D</code>). Rows without the
+      value are hidden, not treated as zero.</li>
+  <li><b>Some molecules were "skipped" or "failed".</b> That's by design —
+      WaweKit processes everything it can and gives you the exact list of what
+      it couldn't, with reasons, behind the <i>Details</i> button. One bad
+      structure never stops a run.</li>
+  <li><b>Similarity scores look different than yesterday.</b> Check the column
+      tooltip: the score depends on the query <i>and</i> the fingerprint
+      settings. Same settings → same numbers, always.</li>
+  <li><b>The 3D view is slow on huge datasets.</b> Select a handful of
+      molecules first — conformers run on the selection when there is one.</li>
+  <li><b>Where is the log file?</b> The path is printed at startup and shown in
+      the log; include it when reporting a problem. Set log level to Debug in
+      Settings for maximum detail.</li>
+  <li><b>Something else?</b> Open an issue on the project page —
+      <a href="https://github.com/waweai/WaweKit">github.com/waweai/WaweKit</a>
+      (also linked from <code>Help → About</code>) — a screenshot plus the log
+      file makes bugs fast to fix.</li>
+</ul>
+
+<hr>
+<p align="center">
+  <i>WaweKit — cheminformatics on your desktop.</i><br>
+  <a href="https://github.com/waweai/WaweKit">github.com/waweai/WaweKit</a>
+</p>

@@ -1,0 +1,10 @@
+# Shipped default settings for Wawekit.
+# Users may override any of these in their own settings.toml inside the OS
+# config directory (Module 15 adds a Settings UI to edit them). Keys not
+# recognized by the current version are ignored safely.
+
+theme = "dark"
+log_level = "INFO"
+window_width = 1280
+window_height = 800
+remember_window_geometry = true

@@ -1,0 +1,129 @@
+/* Wawekit — Moderate theme
+   A soft, warm light theme with muted earth tones. Easy on the eyes
+   without the high contrast of a pure-white palette. */
+
+QWidget {
+    background-color: #e8e4de;
+    color: #2c2a27;
+    font-family: "Segoe UI", "Cantarell", "Helvetica Neue", sans-serif;
+    font-size: 10pt;
+}
+
+QMainWindow, QDialog {
+    background-color: #e8e4de;
+}
+
+QMenuBar {
+    background-color: #ddd8d0;
+    border-bottom: 1px solid #c8c2b8;
+}
+QMenuBar::item:selected {
+    background-color: #7a9e6e;
+    color: #ffffff;
+}
+
+QMenu {
+    background-color: #f0ece6;
+    border: 1px solid #c8c2b8;
+}
+QMenu::item {
+    padding: 6px 36px 6px 20px;
+}
+QMenu::item:selected {
+    background-color: #7a9e6e;
+    color: #ffffff;
+}
+
+QToolBar {
+    background-color: #ddd8d0;
+    border-bottom: 1px solid #c8c2b8;
+    spacing: 4px;
+    padding: 3px;
+}
+
+QStatusBar {
+    background-color: #ddd8d0;
+    border-top: 1px solid #c8c2b8;
+}
+
+QPushButton {
+    background-color: #f0ece6;
+    border: 1px solid #bfb9af;
+    border-radius: 4px;
+    padding: 5px 12px;
+}
+QPushButton:hover { background-color: #e4dfd7; }
+QPushButton:pressed { background-color: #7a9e6e; color: #ffffff; }
+
+QRadioButton::indicator {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #a8a29a;
+    border-radius: 8px;
+    background-color: #f0ece6;
+}
+QRadioButton::indicator:checked {
+    border: 1px solid #7a9e6e;
+    background-color: qradialgradient(cx: 0.5, cy: 0.5, radius: 0.5,
+                                      fx: 0.5, fy: 0.5,
+                                      stop: 0 #7a9e6e, stop: 0.5 #7a9e6e,
+                                      stop: 0.55 #f0ece6, stop: 1 #f0ece6);
+}
+QRadioButton::indicator:disabled {
+    border: 1px solid #c8c2b8;
+    background-color: #e8e4de;
+}
+QRadioButton:disabled {
+    color: #a8a29a;
+}
+
+QDockWidget {
+    border: 1px solid #c8c2b8;
+}
+QDockWidget::title {
+    background-color: #ddd8d0;
+    padding: 6px;
+}
+
+QProgressBar {
+    border: 1px solid #bfb9af;
+    border-radius: 4px;
+    text-align: center;
+    background-color: #f0ece6;
+}
+QProgressBar::chunk { background-color: #7a9e6e; }
+
+QToolTip {
+    background-color: #f0ece6;
+    color: #2c2a27;
+    border: 1px solid #7a9e6e;
+}
+
+QTableView {
+    background-color: #f5f1eb;
+    alternate-background-color: #eae5dd;
+    gridline-color: #d5d0c8;
+    selection-background-color: #7a9e6e;
+    selection-color: #ffffff;
+    border: none;
+}
+QHeaderView::section {
+    background-color: #ddd8d0;
+    color: #2c2a27;
+    border: none;
+    border-right: 1px solid #c8c2b8;
+    border-bottom: 1px solid #c8c2b8;
+    padding: 4px 8px;
+}
+
+QListWidget {
+    background-color: #f5f1eb;
+    border: none;
+}
+QListWidget::item {
+    padding: 4px 6px;
+}
+QListWidget::item:selected {
+    background-color: #7a9e6e;
+    color: #ffffff;
+}

@@ -1,0 +1,23 @@
+# Demo set for chemical space: three loose structural families so clusters
+# are visible after projection — steroids-ish fused rings, simple aromatics,
+# and small aliphatics.
+C[C@]12CCC3C(CCC4=CC(=O)CC[C@@]34C)C1CCC2=O androstenedione-ish
+CC12CCC3C(CCC4=CC(=O)CCC34C)C1CCC2O testosterone-ish
+CC12CCC3C(CCC4=CC(=O)CCC34)C1CCC2=O norandrostenedione-ish
+c1ccccc1 benzene
+Cc1ccccc1 toluene
+Cc1ccc(C)cc1 p-xylene
+Oc1ccccc1 phenol
+Nc1ccccc1 aniline
+c1ccc2ccccc2c1 naphthalene
+CCCCCC hexane
+CCCCCCCC octane
+CCCCCCCCCC decane
+CCO ethanol
+CCCCO butanol
+OCCCCCCO hexanediol
+CC(=O)O acetic-acid
+CCC(=O)O propionic-acid
+CC(C)Cc1ccc(cc1)C(C)C(=O)O ibuprofen
+CC(=O)Oc1ccccc1C(=O)O aspirin
+CC(=O)Nc1ccc(O)cc1 paracetamol

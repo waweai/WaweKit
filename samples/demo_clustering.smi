@@ -1,0 +1,19 @@
+# Demo set for clustering: clear structural families so clusters are obvious.
+# Penicillin-ish beta-lactams, fluoroquinolone-ish, simple sulfonamides,
+# a run of n-alkanes, and a few singletons.
+CC1(C)SC2C(NC(=O)Cc3ccccc3)C(=O)N2C1C(=O)O penicillin-g-ish
+CC1(C)SC2C(NC(=O)Cc3ccc(O)cc3)C(=O)N2C1C(=O)O amoxicillin-ish
+CC1(C)SC2C(NC(=O)COc3ccccc3)C(=O)N2C1C(=O)O penicillin-v-ish
+OC(=O)C1=CN(C2CC2)c2cc(N3CCNCC3)c(F)cc2C1=O ciprofloxacin-ish
+CCN1C=C(C(=O)O)C(=O)c2cc(F)c(N3CCNCC3)cc21 norfloxacin-ish
+Nc1ccc(S(N)(=O)=O)cc1 sulfanilamide
+Cc1ccc(S(N)(=O)=O)cc1 toluenesulfonamide
+COc1ccc(S(N)(=O)=O)cc1 methoxybenzenesulfonamide
+CCCCCC hexane
+CCCCCCC heptane
+CCCCCCCC octane
+CCCCCCCCC nonane
+CCCCCCCCCC decane
+c1ccc2ccccc2c1 naphthalene
+CC(=O)Oc1ccccc1C(=O)O aspirin
+NC(Cc1ccccc1)C(=O)O phenylalanine
