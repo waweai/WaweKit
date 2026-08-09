@@ -90,50 +90,6 @@ settings, plugins, packaging, documentation, CI, and release preparation.
 358 automated tests; CI runs lint, format and the full suite on Ubuntu,
 Windows and macOS.
 
-## Research flagship
-
-Structure standardization is mandatory in every cheminformatics pipeline, but
-the *protocol* used to perform it — which operations, in what order — varies
-across tools and configurations, and is rarely reported precisely enough to
-reproduce. WaweKit treats standardization reproducibility as a measurable,
-first-class property of a dataset rather than an implicit assumption.
-
-`Research → Reproducibility Audit` (`Ctrl+Shift+R`) runs two or more
-standardizers over your loaded dataset and reports:
-
-- **Whether they agree**, under two identity conventions (canonical SMILES and
-  InChIKey) that can genuinely disagree with each other.
-- **Why they don't**, via systematic operation ablation — attributing each
-  disagreement to the specific normalization step responsible, not just
-  flagging that a disagreement exists.
-- **Cross-toolkit comparison.** Standardizers aren't limited to protocols
-  composed from RDKit operations — WaweKit ships adapters for **ChEMBL's own
-  production curation pipeline** and for **MolVS**, so you can ask directly
-  "does my pipeline agree with the one this database runs?"
-
-On a seeded random sample of 4,972 ChEMBL structures, three RDKit-composed
-protocols agreed on only **54.1%** of molecules under canonical-SMILES identity
-and **57.7%** under InChIKey identity. Comparing against the real production
-pipelines found that WaweKit's composed approximation of the ChEMBL pipeline
-reproduces the actual pipeline on **99.8%** of structures — and, more
-surprisingly, that **two configurations of one standardizer (MolVS) agreed
-with each other on only 56.0% of structures, while two independently
-developed standardizers agreed on 77.2%** — configuration choice within a
-single tool spans a wider range of outcomes than the choice between tools.
-
-A companion downstream-impact study, applying the same audit to 27,152 real
-bioactivity measurements across four drug targets, found that aggressive
-standardization can silently delete up to 9.5% of a dataset by merging
-compounds and fuse activities differing by a thousandfold into single
-training labels — while leaving the aggregate metrics normally used to
-validate a pipeline statistically unchanged. In short: an unmoved model score
-is not evidence that a standardization change was safe.
-
-Two manuscript drafts describing the method and the software are included
-under [`learning/`](learning/) in the full development repository, along with
-every script, seed and raw result needed to regenerate the figures above from
-scratch.
-
 ## Architecture
 
 Strict layered design; dependencies point downward only:
