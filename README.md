@@ -138,14 +138,6 @@ black .           # format
 mkdocs serve      # preview docs
 ```
 
-## Documentation
-
-- [`docs/FEATURES.md`](docs/FEATURES.md) — what every feature is, why it's
-  useful, and how it works internally.
-- [`docs/PACKAGING.md`](docs/PACKAGING.md) — building a distributable desktop
-  bundle with PyInstaller.
-- An illustrated manual ships inside the app itself (`Help → User Manual`).
-
 ## Acknowledgements
 
 The interactive 3D conformer viewer is powered by
