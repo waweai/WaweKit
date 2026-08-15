@@ -42,21 +42,67 @@ below.
 
 ## Install
 
-WaweKit installs as a lightweight headless library by default. Add the `[gui]`
-extra for the desktop application:
+Requirements: **Python 3.12 or newer**, 64-bit, on Windows / macOS / Linux, and
+roughly 2 GB of disk space once RDKit and Qt are installed. No account, no
+internet connection at run time, no data leaves your machine.
+
+### Install with pip (any OS)
 
 ```bash
-pip install wawekit          # library + CLI, no Qt
-pip install "wawekit[gui]"   # + the desktop application
+pip install "wawekit[gui] @ git+https://github.com/waweai/WaweKit.git"
 ```
 
-For development:
+That is the desktop application. For the headless library and CLI only — the
+analysis layers import without Qt, so this skips the ~150 MB GUI stack:
+
+```bash
+pip install "wawekit @ git+https://github.com/waweai/WaweKit.git"
+```
+
+> WaweKit is not on PyPI yet. Once it is published, these become the shorter
+> `pip install "wawekit[gui]"` / `pip install wawekit`.
+
+Optional extras, combinable (`"wawekit[gui,standardizers]"`):
+
+| Extra | Adds |
+|---|---|
+| `gui` | PySide6 + matplotlib — the desktop application |
+| `standardizers` | ChEMBL structure pipeline + MolVS, so the auditor can compare against those production pipelines |
+| `science` | plotly + openpyxl for the richer export formats |
+| `dev` | everything above plus pytest, ruff, black, mkdocs, pyinstaller |
+
+Installing into a virtual environment is recommended, so WaweKit's RDKit and Qt
+versions cannot collide with another project's:
 
 ```bash
 python -m venv .venv
 # Windows: .venv\Scripts\activate    macOS/Linux: source .venv/bin/activate
-pip install -e ".[dev]"      # dev = gui + standardizers + test/lint tooling
+pip install "wawekit[gui] @ git+https://github.com/waweai/WaweKit.git"
 ```
+
+### Install from source
+
+```bash
+git clone https://github.com/waweai/WaweKit.git
+cd WaweKit
+python -m venv .venv
+# Windows: .venv\Scripts\activate    macOS/Linux: source .venv/bin/activate
+pip install -e ".[dev]"      # dev = gui + standardizers + test/lint tooling
+pytest                       # optional: confirm the suite passes on your machine
+```
+
+### Windows installer (no Python needed)
+
+For users who should never have to touch a Python environment, WaweKit builds
+into a self-contained Windows installer: run `WawekitSetup-x.y.z.exe`, keep the
+**Create a desktop icon** box ticked, and start the app from the desktop like
+any other program. It installs per-user, so it needs no administrator rights,
+and uninstalls from Add/Remove Programs.
+
+No release has been published yet, so for now the installer has to be built —
+two commands, described in [docs/PACKAGING.md](docs/PACKAGING.md). Because the
+executable is not code-signed yet, Windows SmartScreen will warn on first run;
+choose *More info → Run anyway*.
 
 ## Run
 
@@ -89,6 +135,41 @@ suppress the automatic first-run icon (shared or headless machines), set
 Users who install the packaged Windows build get the icon from the installer's
 own *Create a desktop icon* checkbox instead — see
 [docs/PACKAGING.md](docs/PACKAGING.md).
+
+## Quick start
+
+The repository ships small demo sets in [`samples/`](samples), so there is
+something to work with in the first minute:
+
+1. **Load** — drag `samples/demo_set.smi` onto the window, or `File → Open`.
+   The table fills; click any row to see the structure.
+2. **Clean** — `Chemistry → Standardize`. Pick the operations you want; the
+   result is a change report, so you can see exactly what was altered rather
+   than trusting a silent rewrite.
+3. **Describe** — `Chemistry → Compute Descriptors` adds MW, LogP, TPSA,
+   HBD/HBA and the rest as sortable columns. Type `MW < 500` in the
+   quick-filter box to narrow the table.
+4. **Explore** — `Chemistry → Similarity Search` ranks by Tanimoto against a
+   reference; `Chemistry → Chemical Space` projects the set with PCA/t-SNE and
+   stays linked to the table selection.
+5. **Report** — `File → Generate Report` writes a self-contained HTML or PDF
+   with embedded depictions.
+
+Everything long-running happens on background threads and is cancellable, so
+the window never freezes. Press `F1` at any point for the full illustrated
+manual, and see [docs/FEATURES.md](docs/FEATURES.md) for the feature-by-feature
+reference.
+
+## Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| `wawekit: command not found` | The script directory is not on `PATH`. Use `python -m wawekit`, or activate the virtual environment you installed into. |
+| *"The WaweKit desktop application requires the optional GUI dependencies"* | You installed the headless library. Re-install with the `[gui]` extra. |
+| No desktop icon appeared | Run `wawekit-shortcut`, or use `Help → Create Desktop Shortcut`. It is only ever created automatically once. |
+| Linux: *"could not load the Qt platform plugin xcb"* | Install the system Qt libraries, e.g. `sudo apt install libxcb-cursor0 libxkbcommon-x11-0 libegl1`. |
+| Windows SmartScreen blocks the installer | The build is not code-signed yet — *More info → Run anyway*. |
+| Something misbehaves and you want detail | Raise the log level in `File → Settings` to `DEBUG`. The log file lives under the OS app-data directory (`%APPDATA%\TheWaweAI\Wawekit\logs` on Windows) and its full path is written to the console at startup. |
 
 ## Features
 
