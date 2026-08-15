@@ -8,3 +8,9 @@ log_level = "INFO"
 window_width = 1280
 window_height = 800
 remember_window_geometry = true
+
+# Create a desktop icon (and Start/application-menu entry) on the first launch
+# after installation. Set to false before first run on shared or headless
+# machines; afterwards a marker file in the config directory means this is no
+# longer consulted — use `wawekit-shortcut` / `wawekit-shortcut --remove`.
+create_desktop_shortcut = true

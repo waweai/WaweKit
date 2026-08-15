@@ -7,6 +7,25 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+- **Desktop icon on install.** Installing WaweKit now leaves something to
+  double-click.
+  - New `wawekit.core.shortcut` (stdlib only, no Qt) creates a real Windows
+    `.lnk` via `WScript.Shell`, an XDG `.desktop` entry on Linux (desktop *and*
+    `~/.local/share/applications`), or a `.app` symlink / `.command` launcher
+    on macOS.
+  - Because a PEP 517 wheel has no post-install hook, the **first launch**
+    after `pip install "wawekit[gui]"` creates the icon and writes a marker
+    file, so it happens exactly once — deleting the icon makes it stay
+    deleted. Opt out with `create_desktop_shortcut = false` in `settings.toml`.
+  - New `wawekit-shortcut` console script (`--remove`, `--no-menu`) and
+    `Help → Create Desktop Shortcut` for creating it on demand.
+  - New `packaging/windows/wawekit.iss` — an Inno Setup installer around the
+    PyInstaller build with a *Create a desktop icon* task, a Start Menu group,
+    a clean uninstall entry, `.sdf`/`.smi`/`.mol` file associations, and a
+    no-admin per-user install by default. It writes the app's marker file, so
+    unticking the desktop-icon box is respected on first launch.
+  - 11 new tests; all shortcut locations are redirected to a temp directory so
+    the suite never touches a real desktop.
 - **Branding.** The WaweKit logo (`WaweKit.png`) is now the application
   identity: window/taskbar icon (badge crop), a multi-resolution
   `resources/icons/wawekit.ico` baked into the PyInstaller build, and a

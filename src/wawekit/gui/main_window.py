@@ -48,6 +48,7 @@ from PySide6.QtWidgets import (
 from wawekit.core import constants
 from wawekit.core.config import AppConfig, save_config
 from wawekit.core.logging_config import setup_logging
+from wawekit.core.shortcut import ShortcutError, create_desktop_shortcut
 from wawekit.gui.dialogs.batch_dialog import BatchDialog
 from wawekit.gui.dialogs.chemical_space_dialog import ChemicalSpaceDialog
 from wawekit.gui.dialogs.clustering_dialog import ClusteringDialog
@@ -504,6 +505,12 @@ class MainWindow(QMainWindow):
         self.action_manual.setStatusTip("Open the illustrated user manual")
         self.action_manual.triggered.connect(self._on_manual)
 
+        self.action_shortcut = QAction("Create &Desktop Shortcut", self)
+        self.action_shortcut.setStatusTip(
+            "Put a Wawekit icon on the desktop (and in the applications menu)"
+        )
+        self.action_shortcut.triggered.connect(self._on_create_shortcut)
+
         self.action_about = QAction("&About", self)
         self.action_about.setStatusTip("About this application")
         self.action_about.triggered.connect(self._on_about)
@@ -556,6 +563,7 @@ class MainWindow(QMainWindow):
 
         help_menu = menubar.addMenu("&Help")
         help_menu.addAction(self.action_manual)
+        help_menu.addAction(self.action_shortcut)
         help_menu.addSeparator()
         # Look & Feel submenu under Help, matching DataWarrior layout.
         look_feel_menu = QMenu("Look \u0026 Feel", self)
@@ -1821,6 +1829,36 @@ class MainWindow(QMainWindow):
         self._manual_dialog.show()
         self._manual_dialog.raise_()
         self._manual_dialog.activateWindow()
+
+    def _on_create_shortcut(self) -> None:
+        """Create the desktop icon on demand (Help ▸ Create Desktop Shortcut).
+
+        The first launch after installation already does this; this action
+        exists for the user who deleted the icon, moved their environment, or
+        installed with shortcut creation switched off.
+        """
+        try:
+            created = create_desktop_shortcut()
+        except ShortcutError as exc:
+            QMessageBox.warning(
+                self,
+                "Create Desktop Shortcut",
+                f"The shortcut could not be created.\n\n{exc}",
+            )
+            return
+
+        if not created:
+            QMessageBox.information(
+                self,
+                "Create Desktop Shortcut",
+                "No desktop or applications folder was found on this machine, "
+                "so there is nowhere to put a shortcut.",
+            )
+            return
+
+        listing = "\n".join(str(path) for path in created)
+        QMessageBox.information(self, "Create Desktop Shortcut", f"Created:\n\n{listing}")
+        self.statusBar().showMessage(f"Shortcut created: {created[0]}", 5000)
 
     def _on_about(self) -> None:
         """Display the About dialog with developer and organization info."""

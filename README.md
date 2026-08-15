@@ -69,6 +69,27 @@ python -m wawekit
 The desktop application opens with a branded splash, then the main window. An
 illustrated in-app manual is one keypress away (`Help → User Manual`, `F1`).
 
+### Desktop icon
+
+The first launch after installing puts a **WaweKit icon on your desktop** and
+registers the app with the Start Menu (Windows) or applications menu (Linux),
+so afterwards you can start it by double-clicking rather than by typing a
+command. It happens once: delete the icon and it stays deleted.
+
+To create or remove it yourself at any time:
+
+```bash
+wawekit-shortcut              # desktop icon + menu entry
+wawekit-shortcut --remove     # take them away again
+```
+
+`Help → Create Desktop Shortcut` does the same thing from inside the app. To
+suppress the automatic first-run icon (shared or headless machines), set
+`create_desktop_shortcut = false` in `settings.toml` before the first run.
+Users who install the packaged Windows build get the icon from the installer's
+own *Create a desktop icon* checkbox instead — see
+[docs/PACKAGING.md](docs/PACKAGING.md).
+
 ## Features
 
 | | |

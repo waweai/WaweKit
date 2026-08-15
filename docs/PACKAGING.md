@@ -57,14 +57,64 @@ frozen build:
   (`WaweKit.png` at the repo root); the spec points `icon=` at it. A macOS
   `.icns` would still need generating for a Mac build.
 
+## Windows installer (desktop icon)
+
+`dist/Wawekit/` is a folder the user would otherwise have to keep somewhere and
+launch by hand. `packaging/windows/wawekit.iss` wraps it in an
+[Inno Setup](https://jrsoftware.org/isinfo.php) installer so installing behaves
+the way people expect from a desktop app:
+
+```bash
+pyinstaller wawekit.spec                  # 1. freeze  -> dist/Wawekit/
+iscc packaging/windows/wawekit.iss        # 2. package -> dist/installer/WawekitSetup-0.1.0.exe
+```
+
+What the installer does:
+
+- **A desktop icon**, from a *Create a desktop icon* checkbox that is ticked by
+  default — the point of the whole step.
+- A Start Menu group with the app and its uninstaller.
+- An Add/Remove Programs entry that uninstalls cleanly. The stable `AppId`
+  GUID means the next version upgrades this install rather than sitting beside
+  it — never reuse that GUID for another app.
+- Registers `.sdf` / `.smi` / `.mol` under an "Open with" ProgId, so molecule
+  files show the WaweKit icon and can be opened by double-click.
+- Installs **per-user** (`PrivilegesRequired=lowest`) into `%LOCALAPPDATA%`,
+  which needs no admin rights — the common case on managed lab machines.
+  `WawekitSetup.exe /ALLUSERS` still gives a machine-wide install.
+- Writes the same `.desktop-shortcut` marker file the application uses (see
+  below), so a user who *unticks* the desktop-icon box does not get one anyway
+  the first time they launch.
+
+User settings and logs under `%APPDATA%\TheWaweAI\Wawekit` are deliberately
+left in place by the uninstaller.
+
+## Shortcuts for a `pip` install
+
+A PEP 517 wheel has no post-install hook, so `pip install "wawekit[gui]"`
+cannot place an icon at install time. `wawekit.core.shortcut` covers that
+route instead: the first launch creates the desktop icon and menu entry, then
+drops a marker file in the config directory so it never asks again — deleting
+the icon has to mean deleting it. The same code is exposed as the
+`wawekit-shortcut` console script (`--remove`, `--no-menu`) and as
+`Help → Create Desktop Shortcut`.
+
+The module is deliberately Qt-free and uses only the standard library:
+a `.lnk` written through `WScript.Shell` under PowerShell on Windows, an XDG
+`.desktop` entry on Linux (installed both to the desktop and to
+`~/.local/share/applications`), and a symlink to the `.app` — or an executable
+`.command` — on macOS. `pywin32` is not worth taking on as a dependency for
+one shortcut, and hand-writing the binary `.lnk` format is far more fragile
+than driving the COM object Windows already ships.
+
 ## What is *not* covered here
 
 - Code signing (Windows Authenticode / macOS notarization) — required before
   any real public distribution, since an unsigned executable triggers OS
   warnings. Left for Module 20 release prep, since it needs real certificates.
-- An installer (MSI/NSIS on Windows, `.dmg` on macOS, AppImage on Linux) —
-  the `dist/Wawekit/` folder from this spec is the *input* to that step, not
-  a replacement for it.
+- A macOS `.dmg` and a Linux AppImage/`.deb`. The Windows installer above is
+  the only packaged installer so far; on the other platforms the frozen folder
+  plus `wawekit-shortcut` is what users get.
 - Auto-update. Out of scope for v1.
 
 ## Verifying a build
@@ -80,6 +130,9 @@ After `pyinstaller wawekit.spec`, launch `dist/Wawekit/Wawekit.exe` directly
   backend was bundled).
 - Open the 3D conformer viewer (proves `3Dmol-min.js` and QtWebEngine are
   present).
+- Run the installer and confirm the desktop icon appears, shows the WaweKit
+  badge, and launches the app (proves the `.iss` `[Icons]`/`[Tasks]` wiring and
+  the bundled `.ico`).
 
 This is a full smoke test of every category of asset the hand-written spec
 exists to bundle — a build that merely "doesn't error during `pyinstaller`"
