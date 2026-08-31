@@ -60,6 +60,7 @@ from wawekit.gui.widgets.structure_delegate import (
 from wawekit.models.descriptors import DESCRIPTOR_SPECS
 from wawekit.models.molecule import MoleculeRecord
 from wawekit.models.scaffold import ScaffoldRepresentation
+from wawekit.models.shape3d import SHAPE3D_SPECS
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +74,7 @@ _LEADING_HEADERS: tuple[str, ...] = ("#", "Structure", "Name", "SMILES", "Formul
 _HEADERS: tuple[str, ...] = (
     *_LEADING_HEADERS,
     *(spec.label for spec in DESCRIPTOR_SPECS),
+    *(spec.label for spec in SHAPE3D_SPECS),
     "Fingerprint",
     "Similarity",
     "Scaffold",
@@ -92,9 +94,10 @@ _SMILES_MAX_WIDTH = 260
 #: Cap for the Scaffold column: scaffold SMILES can be long, same reasoning.
 _SCAFFOLD_MAX_WIDTH = 260
 
-#: Descriptor panel bounds, then the trailing columns.
+#: Descriptor panel bounds, the 3D shape panel, then the trailing columns.
 _FIRST_DESCRIPTOR_COLUMN = len(_LEADING_HEADERS)
-_FINGERPRINT_COLUMN = _FIRST_DESCRIPTOR_COLUMN + len(DESCRIPTOR_SPECS)
+_FIRST_SHAPE3D_COLUMN = _FIRST_DESCRIPTOR_COLUMN + len(DESCRIPTOR_SPECS)
+_FINGERPRINT_COLUMN = _FIRST_SHAPE3D_COLUMN + len(SHAPE3D_SPECS)
 SIMILARITY_COLUMN = _FINGERPRINT_COLUMN + 1
 SCAFFOLD_COLUMN = SIMILARITY_COLUMN + 1
 CLUSTER_COLUMN = SCAFFOLD_COLUMN + 1
@@ -192,6 +195,8 @@ class MoleculeTableModel(QAbstractTableModel):
         if role == Qt.ItemDataRole.ToolTipRole:
             if self._is_descriptor_column(section):
                 return DESCRIPTOR_SPECS[section - _FIRST_DESCRIPTOR_COLUMN].tooltip
+            if self._is_shape3d_column(section):
+                return SHAPE3D_SPECS[section - _FIRST_SHAPE3D_COLUMN].tooltip
             if section == _FINGERPRINT_COLUMN:
                 return _FINGERPRINT_TOOLTIP
             if section == SIMILARITY_COLUMN:
@@ -206,8 +211,13 @@ class MoleculeTableModel(QAbstractTableModel):
 
     @staticmethod
     def _is_descriptor_column(column: int) -> bool:
-        """Return True if ``column`` falls inside the descriptor panel."""
-        return _FIRST_DESCRIPTOR_COLUMN <= column < _FINGERPRINT_COLUMN
+        """Return True if ``column`` falls inside the 2D descriptor panel."""
+        return _FIRST_DESCRIPTOR_COLUMN <= column < _FIRST_SHAPE3D_COLUMN
+
+    @staticmethod
+    def _is_shape3d_column(column: int) -> bool:
+        """Return True if ``column`` falls inside the 3D shape panel."""
+        return _FIRST_SHAPE3D_COLUMN <= column < _FINGERPRINT_COLUMN
 
     def data(self, index: QModelIndex, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
         """Return display text, raw sort key, or the backing record, per role."""
@@ -264,7 +274,28 @@ class MoleculeTableModel(QAbstractTableModel):
             if not record.alerts_computed:
                 return _ALERTS_PENDING_TOOLTIP
             return "\n".join(record.alerts) if record.alerts else "Clean (no alerts detected)"
+        if column == _FIRST_SHAPE3D_COLUMN:
+            # The radial values have no columns of their own — how many there are
+            # depends on the options — so the Shape cell's hover is where they
+            # surface, together with the conformer protocol that makes them
+            # comparable (or not) with another dataset's.
+            return MoleculeTableModel._shape3d_tooltip(record)
         return None
+
+    @staticmethod
+    def _shape3d_tooltip(record: MoleculeRecord) -> str | None:
+        """Radial shell values plus the geometry protocol, for the Shape cell."""
+        shape = record.shape3d
+        if shape is None:
+            return None
+        lines = [f"Radial shells — {shape.options.label}"]
+        lines += [f"  {key}: {value:.3f}" for key, value in shape.radial.items()]
+        lines.append(f"NPR1 {shape.npr1:.2f} · NPR2 {shape.npr2:.2f}")
+        if shape.conformer_options is not None:
+            lines.append(f"Geometry: {shape.conformer_options.label}")
+        source = "mean of all conformers" if shape.conf_id is None else "lowest-energy conformer"
+        lines.append(f"Measured on the {source} of {shape.n_conformers}")
+        return "\n".join(lines)
 
     @staticmethod
     def _similarity_font(record: MoleculeRecord) -> QFont | None:
@@ -337,6 +368,10 @@ class MoleculeTableModel(QAbstractTableModel):
         """
         self._columns_updated(_FIRST_DESCRIPTOR_COLUMN, _FINGERPRINT_COLUMN - 1)
 
+    def shape3d_updated(self) -> None:
+        """Repaint the 3D shape columns after values were cached in place."""
+        self._columns_updated(_FIRST_SHAPE3D_COLUMN, _FINGERPRINT_COLUMN - 1)
+
     def fingerprints_updated(self) -> None:
         """Repaint the fingerprint column after vectors were cached in place."""
         self._columns_updated(_FINGERPRINT_COLUMN, _FINGERPRINT_COLUMN)
@@ -408,6 +443,11 @@ class MoleculeTableModel(QAbstractTableModel):
             if record.descriptors is None:
                 return ""  # blank until descriptors are computed
             return spec.fmt.format(spec.getter(record.descriptors))
+        if MoleculeTableModel._is_shape3d_column(column):
+            shape_spec = SHAPE3D_SPECS[column - _FIRST_SHAPE3D_COLUMN]
+            if record.shape3d is None:
+                return ""  # blank until 3D shape descriptors are computed
+            return shape_spec.fmt.format(shape_spec.getter(record.shape3d))
         if column == _FINGERPRINT_COLUMN:
             # A 2048-bit vector isn't displayable; show what it is and how dense.
             return "" if record.fingerprint is None else record.fingerprint.summary
@@ -460,6 +500,10 @@ class MoleculeTableModel(QAbstractTableModel):
                 return None  # uncomputed rows sink below real values when sorting
             spec = DESCRIPTOR_SPECS[column - _FIRST_DESCRIPTOR_COLUMN]
             return spec.getter(record.descriptors)
+        if MoleculeTableModel._is_shape3d_column(column):
+            if record.shape3d is None:
+                return None  # uncomputed rows sink below measured ones
+            return SHAPE3D_SPECS[column - _FIRST_SHAPE3D_COLUMN].getter(record.shape3d)
         if column == _FINGERPRINT_COLUMN:
             # Sort by bit count, not by the summary text: "9 on" must precede
             # "24 on", which is exactly what string sorting would get wrong.

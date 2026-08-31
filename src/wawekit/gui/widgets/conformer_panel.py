@@ -156,9 +156,36 @@ class ConformerPanel(QWidget):
         self._table.setItem(row, column, item)
 
     def _show_conformer(self, conf_id: int) -> None:
-        """Render the conformer with id ``conf_id`` in the 3D view."""
-        if self._record is not None and self._record.conformers is not None:
-            self._view.show_molblock(self._record.conformers.molblock_for(conf_id))
+        """Render the conformer with id ``conf_id`` in the 3D view.
+
+        When the record also carries 3D shape descriptors, the radial shells
+        they were measured over are drawn over the geometry — the numbers in the
+        table and the spheres on screen then describe the same thing, rather than
+        the user having to trust that they do.
+        """
+        if self._record is None or self._record.conformers is None:
+            return
+        self._view.show_molblock(self._record.conformers.molblock_for(conf_id))
+        self._show_shells(conf_id)
+
+    def _show_shells(self, conf_id: int) -> None:
+        """Overlay the radial shells for ``conf_id``, or clear them if unmeasured."""
+        shape = self._record.shape3d if self._record is not None else None
+        if shape is None:
+            self._view.clear_shells()
+            return
+        # The stored centre belongs to the conformer the descriptors were
+        # measured on. For any other conformer it is the wrong point in space,
+        # so recompute rather than draw shells where nothing was measured.
+        if shape.conf_id == conf_id:
+            center = shape.center
+        else:
+            from wawekit.services.chemistry.shape3d import compute_radial_shells
+
+            center, _values = compute_radial_shells(
+                self._record.conformers.mol_3d, conf_id, shape.options
+            )
+        self._view.show_shells(center, shape.options.shells)
 
     # --------------------------------------------------------------- handlers
     def _on_row_changed(self) -> None:

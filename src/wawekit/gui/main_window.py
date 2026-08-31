@@ -58,6 +58,7 @@ from wawekit.gui.dialogs.manual_dialog import ManualDialog
 from wawekit.gui.dialogs.report_dialog import ReportDialog
 from wawekit.gui.dialogs.reproducibility_dialog import ReproducibilityDialog
 from wawekit.gui.dialogs.settings_dialog import SettingsDialog
+from wawekit.gui.dialogs.shape3d_dialog import Shape3DDialog
 from wawekit.gui.dialogs.similarity_dialog import SimilarityDialog
 from wawekit.gui.dialogs.standardize_dialog import StandardizeDialog
 from wawekit.gui.dialogs.substructure_dialog import SubstructureDialog
@@ -104,6 +105,10 @@ from wawekit.services.chemistry.scaffolds import (
     ScaffoldReport,
     compute_scaffolds,
     group_scaffolds,
+)
+from wawekit.services.chemistry.shape3d import (
+    Shape3DReport,
+    compute_shape_descriptors,
 )
 from wawekit.services.chemistry.similarity import (
     SimilarityReport,
@@ -171,6 +176,7 @@ class MainWindow(QMainWindow):
         self._scaffold_worker: FunctionWorker | None = None
         # Conformer-generation worker (ditto).
         self._conf_worker: FunctionWorker | None = None
+        self._shape3d_worker: FunctionWorker | None = None
         # Chemical-space projection worker (ditto).
         self._space_worker: FunctionWorker | None = None
         # Clustering worker (ditto).
@@ -413,6 +419,14 @@ class MainWindow(QMainWindow):
         )
         self.action_conformers.triggered.connect(self._on_generate_conformers)
 
+        self.action_shape3d = QAction(get_icon("conformer"), "3D S&hape Descriptors…", self)
+        self.action_shape3d.setShortcut("Ctrl+Shift+H")
+        self.action_shape3d.setStatusTip(
+            "Measure 3D shape (PBF, radius of gyration, rod/disc/sphere) and radial "
+            "shell composition"
+        )
+        self.action_shape3d.triggered.connect(self._on_shape3d)
+
         self.action_chemical_space = QAction(get_icon("chemspace"), "Chemical &Space…", self)
         self.action_chemical_space.setShortcut("Ctrl+Shift+P")
         self.action_chemical_space.setStatusTip(
@@ -528,6 +542,7 @@ class MainWindow(QMainWindow):
         chemistry_menu.addAction(self.action_similarity)
         chemistry_menu.addAction(self.action_scaffolds)
         chemistry_menu.addAction(self.action_conformers)
+        chemistry_menu.addAction(self.action_shape3d)
         chemistry_menu.addAction(self.action_chemical_space)
         chemistry_menu.addAction(self.action_cluster)
         chemistry_menu.addAction(self.action_substructure)
@@ -646,6 +661,7 @@ class MainWindow(QMainWindow):
             or self._sim_worker is not None
             or self._scaffold_worker is not None
             or self._conf_worker is not None
+            or self._shape3d_worker is not None
             or self._space_worker is not None
             or self._cluster_worker is not None
             or self._substruct_worker is not None
@@ -696,6 +712,7 @@ class MainWindow(QMainWindow):
             self.action_similarity,
             self.action_scaffolds,
             self.action_conformers,
+            self.action_shape3d,
             self.action_chemical_space,
             self.action_cluster,
             self.action_substructure,
@@ -1284,6 +1301,98 @@ class MainWindow(QMainWindow):
         box.setText(
             f"{report.n_failed} molecule(s) could not be embedded.\n"
             f"{report.computed} generated successfully."
+        )
+        details = "\n".join(report.failures[:_MAX_ERRORS_SHOWN])
+        if report.n_failed > _MAX_ERRORS_SHOWN:
+            details += f"\n… and {report.n_failed - _MAX_ERRORS_SHOWN} more (see log file)"
+        box.setDetailedText(details)
+        box.exec()
+
+    # ---------------------------------------------------- 3D shape descriptors
+    def _on_shape3d(self) -> None:
+        """Configure and launch 3D shape/radial-shell descriptor computation.
+
+        Like conformer generation — and for the same reason, since it may have to
+        do exactly that first — this runs on the *selection* when there is one.
+        """
+        if self._table_panel.row_count == 0:
+            self.statusBar().showMessage("Load molecules before measuring 3D shape", 4000)
+            return
+        chosen = Shape3DDialog.get_options(self)
+        if chosen is None:
+            return  # cancelled
+        options, conformer_options = chosen
+
+        selected = self._table_panel.selected_records()
+        records = selected if selected else list(self._table_panel.model.records)
+        scope = "selection" if selected else "dataset"
+        self._begin_run(
+            len(records),
+            f"Measuring 3D shape for {len(records)} molecule(s) ({scope})…",
+        )
+
+        worker = FunctionWorker(
+            compute_shape_descriptors,
+            records,
+            options,
+            generate_missing=conformer_options,
+            inject_progress=True,
+        )
+        worker.signals.progress.connect(self._on_load_progress)
+        worker.signals.finished.connect(self._on_shape3d_finished)
+        worker.signals.error.connect(self._on_shape3d_error)
+        self._shape3d_worker = worker
+        QThreadPool.globalInstance().start(worker)
+        logger.info("Started 3D shape descriptors for %d record(s)", len(records))
+
+    def _on_shape3d_finished(self, report: Shape3DReport) -> None:
+        """Repaint the shape columns and report the run."""
+        self._table_panel.model.shape3d_updated()
+        # Geometry may have been generated as a side effect, so the Conformers
+        # panel now has something to show for records that previously had none.
+        selected = self._table_panel.selected_records()
+        records = self._table_panel.model.records
+        to_show = selected[0] if selected else (records[0] if records else None)
+        if to_show is not None:
+            self._conformer_panel.set_record(to_show)
+
+        generated = (
+            f", {report.conformers_generated} needed geometry"
+            if report.conformers_generated
+            else ""
+        )
+        self.statusBar().showMessage(
+            f"3D shape: {report.computed} molecule(s) measured{generated}, "
+            f"{report.reused} reused, {report.n_failed} failure(s) — hover a Shape cell "
+            f"for the radial values",
+            10000,
+        )
+        if report.failures:
+            self._show_shape3d_failures(report)
+        self._finish_shape3d()
+
+    def _on_shape3d_error(self, message: str) -> None:
+        """Report a whole-run failure (per-molecule problems are handled inline)."""
+        QMessageBox.warning(self, "3D shape descriptors failed", message)
+        self._finish_shape3d()
+
+    def _finish_shape3d(self) -> None:
+        """Reset UI state after the run and resume any queued loads."""
+        self._shape3d_worker = None
+        self._progress.setVisible(False)
+        self._set_actions_busy(False)
+        self._start_next_load()
+
+    def _show_shape3d_failures(self, report: Shape3DReport) -> None:
+        """List molecules whose 3D shape could not be measured."""
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Icon.Warning)
+        box.setWindowTitle("3D shape computed with errors")
+        box.setText(
+            f"{report.n_failed} molecule(s) could not be measured.\n"
+            f"{report.computed} measured successfully.\n\n"
+            "The usual cause is missing 3D geometry — re-run with "
+            "'Generate 3D conformers' enabled."
         )
         details = "\n".join(report.failures[:_MAX_ERRORS_SHOWN])
         if report.n_failed > _MAX_ERRORS_SHOWN:

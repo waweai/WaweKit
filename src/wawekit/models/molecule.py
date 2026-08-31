@@ -36,6 +36,7 @@ from wawekit.models.conformers import ConformerSet
 from wawekit.models.descriptors import DescriptorSet
 from wawekit.models.fingerprints import Fingerprint
 from wawekit.models.scaffold import ScaffoldResult
+from wawekit.models.shape3d import ShapeDescriptors
 from wawekit.models.similarity import SimilarityScore
 from wawekit.models.substructure import SubstructureHit
 
@@ -91,6 +92,16 @@ class MoleculeRecord:
         run. The 3D geometry lives on
         :attr:`~wawekit.models.conformers.ConformerSet.mol_3d`, a *separate*
         molecule, so ``mol`` stays 2D for the table and Structure panel.
+    shape3d:
+        3D shape and radial-shell descriptors, or ``None`` until
+        :func:`~wawekit.services.chemistry.shape3d.compute_shape_descriptors`
+        has run. Unlike every intrinsic cache above it, this one is *geometry*-
+        relative: it describes one conformer rather than the molecule, so it
+        carries both the radial options and the
+        :class:`~wawekit.models.conformers.ConformerOptions` that produced the
+        geometry. Regenerating conformers under different options invalidates it
+        in meaning even where it stays valid in type — recompute rather than
+        compare values across protocols.
     cluster:
         Cluster membership from the most recent clustering run, or ``None`` if
         this record has not been clustered. Like ``similarity`` and unlike the
@@ -114,6 +125,7 @@ class MoleculeRecord:
     similarity: SimilarityScore | None = None
     scaffold: ScaffoldResult | None = None
     conformers: ConformerSet | None = None
+    shape3d: ShapeDescriptors | None = None
     cluster: ClusterAssignment | None = None
     substructure_match: SubstructureHit | None = None
 

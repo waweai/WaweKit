@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import logging
+from collections.abc import Sequence
 from importlib import resources
 
 from PySide6.QtWebEngineWidgets import QWebEngineView
@@ -30,6 +31,15 @@ logger = logging.getLogger(__name__)
 #: Background colours matching the two themes (3Dmol wants a CSS colour).
 _DARK_BG = "#1a1b1e"
 _LIGHT_BG = "#ffffff"
+
+#: Colours for radial shells, innermost first (cycled if there are more shells).
+_SHELL_COLORS = ("#d2a679", "#2e8b57", "#4682b4", "#a0522d")
+
+#: Opacity of the innermost shell, and how much each shell outward loses.
+#: Outer shells must be fainter or they simply hide everything inside them.
+_SHELL_OPACITY = 0.30
+_SHELL_OPACITY_STEP = 0.07
+_SHELL_OPACITY_MIN = 0.08
 
 
 def _load_3dmol_js() -> str:
@@ -73,7 +83,27 @@ def _build_page(dark: bool) -> str:
     viewer.setBackgroundColor(color);
     viewer.render();
   }}
-  function wawekitClear() {{ viewer.removeAllModels(); viewer.render(); }}
+  function wawekitShells(center, shells) {{
+    // Draw the radial shells a ShapeDescriptors panel was measured over, as
+    // translucent spheres about the same centre the service used. Purely an
+    // overlay: it adds no model, so wawekitLoad's zoom and styling still apply.
+    viewer.removeAllShapes();
+    shells.forEach(function (shell) {{
+      viewer.addSphere({{
+        center: {{ x: center[0], y: center[1], z: center[2] }},
+        radius: shell[0],
+        color: shell[1],
+        opacity: shell[2],
+      }});
+    }});
+    viewer.render();
+  }}
+  function wawekitClearShells() {{ viewer.removeAllShapes(); viewer.render(); }}
+  function wawekitClear() {{
+    viewer.removeAllModels();
+    viewer.removeAllShapes();
+    viewer.render();
+  }}
 </script>
 </body>
 </html>"""
@@ -96,6 +126,7 @@ class ConformerView(QWidget):
         self._dark = dark
         self._loaded = False
         self._pending: str | None = None
+        self._pending_shells: tuple[tuple[float, ...], list[list]] | None = None
 
         self._web = QWebEngineView(self)
         self._web.loadFinished.connect(self._on_load_finished)
@@ -116,9 +147,43 @@ class ConformerView(QWidget):
         else:
             self._pending = molblock
 
+    def show_shells(self, center: tuple[float, float, float], radii: Sequence[float]) -> None:
+        """Overlay the radial shells a 3D descriptor panel was measured over.
+
+        Draws one translucent sphere per radius about ``center``, which must be
+        in the same coordinate frame as the displayed conformer — pass
+        :attr:`~wawekit.models.shape3d.ShapeDescriptors.center` and
+        :attr:`~wawekit.models.shape3d.RadialOptions.shells` together and it
+        lines up by construction. Outer shells are drawn fainter so they do not
+        obscure the geometry inside them.
+
+        Parameters
+        ----------
+        center:
+            ``(x, y, z)`` the shells are centred on.
+        radii:
+            Shell radii in ångström.
+
+        """
+        shells = []
+        for index, radius in enumerate(sorted(radii)):
+            opacity = max(_SHELL_OPACITY - index * _SHELL_OPACITY_STEP, _SHELL_OPACITY_MIN)
+            shells.append([float(radius), _SHELL_COLORS[index % len(_SHELL_COLORS)], opacity])
+
+        self._pending_shells = (tuple(center), shells)
+        if self._loaded:
+            self._run(f"wawekitShells({json.dumps(list(center))}, {json.dumps(shells)})")
+
+    def clear_shells(self) -> None:
+        """Remove the shell overlay, leaving the molecule displayed."""
+        self._pending_shells = None
+        if self._loaded:
+            self._run("wawekitClearShells()")
+
     def clear(self) -> None:
-        """Remove any displayed molecule."""
+        """Remove any displayed molecule and shell overlay."""
         self._pending = None
+        self._pending_shells = None
         if self._loaded:
             self._run("wawekitClear()")
 
@@ -140,6 +205,9 @@ class ConformerView(QWidget):
         if self._pending is not None:
             self._run(f"wawekitLoad({json.dumps(self._pending)})")
             self._pending = None
+        if self._pending_shells is not None:
+            center, shells = self._pending_shells
+            self._run(f"wawekitShells({json.dumps(list(center))}, {json.dumps(shells)})")
 
     def _run(self, script: str) -> None:
         """Run a snippet of JavaScript in the page."""

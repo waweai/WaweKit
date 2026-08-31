@@ -19,6 +19,7 @@ from wawekit.gui.widgets.structure_delegate import RECORD_ROLE
 from wawekit.models.descriptors import DESCRIPTOR_SPECS
 from wawekit.models.molecule import MoleculeRecord
 from wawekit.models.scaffold import ScaffoldRepresentation
+from wawekit.models.shape3d import SHAPE3D_SPECS
 from wawekit.services.chemistry.alerts import compute_alerts_for_records
 from wawekit.services.chemistry.descriptors import compute_descriptors
 from wawekit.services.chemistry.fingerprints import compute_fingerprints
@@ -38,10 +39,10 @@ def _records(*smiles_names: tuple[str, str]) -> list[MoleculeRecord]:
 def test_model_starts_empty(qtbot):
     model = MoleculeTableModel()
     assert model.rowCount() == 0
-    # 6 leading (# Structure Name SMILES Formula "Heavy atoms") + descriptor
-    # panel + Fingerprint + Similarity + Scaffold + Cluster + Substructure +
-    # Alerts + Source.
-    assert model.columnCount() == 6 + len(DESCRIPTOR_SPECS) + 7
+    # 6 leading (# Structure Name SMILES Formula "Heavy atoms") + the 2D
+    # descriptor panel + the 3D shape panel + Fingerprint + Similarity +
+    # Scaffold + Cluster + Substructure + Alerts + Source.
+    assert model.columnCount() == 6 + len(DESCRIPTOR_SPECS) + len(SHAPE3D_SPECS) + 7
 
 
 def test_model_append_and_display(qtbot):
