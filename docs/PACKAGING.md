@@ -1,87 +1,79 @@
-# Packaging Wawekit as a desktop bundle
+# Building installable desktop releases
 
-Wawekit is normally run from source (`pip install -e .` then `wawekit`, or
-`python -m wawekit`). For end users who should not need a Python environment,
-`wawekit.spec` freezes the app into a self-contained folder with
-[PyInstaller](https://pyinstaller.org/).
+WaweKit uses PyInstaller to bundle Python, Qt, RDKit, and the application assets.
+End users do not need Python or any packages installed.
 
-## Building
+PyInstaller is not a cross-compiler. Build each artifact on the operating system
+where it will run, or use the included GitHub Actions release workflow.
+
+## Local build
+
+Create and activate a Python 3.12 virtual environment, then run:
 
 ```bash
-pip install -e ".[dev]"        # includes pyinstaller
-pyinstaller wawekit.spec
+python -m pip install -e ".[gui]" pyinstaller
+python scripts/build_release.py
 ```
 
-Output: `dist/Wawekit/` — a folder containing `Wawekit.exe` (Windows) or
-`Wawekit` (Linux/macOS) plus all bundled libraries and data files. Distribute
-the whole folder; the executable is not standalone (`--onefile` is
-deliberately not used — see below).
+The command creates the native bundle and its shareable archive:
 
-## Why a hand-written `.spec` file
+| Build host | Output |
+| --- | --- |
+| macOS Apple Silicon | `dist/WaweKit.app` and `dist/WaweKit-0.1.0-macOS-arm64.dmg` |
+| macOS Intel | `dist/WaweKit.app` and `dist/WaweKit-0.1.0-macOS-x86_64.dmg` |
+| Windows | `dist/WaweKit/WaweKit.exe` and a portable `.zip` |
+| Linux | `dist/WaweKit/WaweKit` and a portable `.tar.gz` |
 
-A plain `pyinstaller src/wawekit/app.py` looks like it should work — PyInstaller
-walks the import graph and bundles what it finds — but three categories of
-files never appear in that graph and would silently be missing from the
-frozen build:
+Each archive also gets a neighboring `.sha256` checksum file.
 
-1. **Assets loaded by path, not `import`.** The SVG toolbar icons and PNG
-   brand assets (`resources/icons/`), the two QSS theme sheets
-   (`gui/themes/{dark,light}.qss`), the vendored `3Dmol-min.js` used by the
-   3D conformer viewer (Module 9), and the illustrated user manual
-   (`resources/manual/`) are all read via `importlib.resources` at
-   runtime. PyInstaller's static analysis only sees `import` statements, so
-   these are listed explicitly in the spec's `datas`.
-2. **RDKit's own data files.** RDKit's C++ layer loads atomic parameter
-   tables (used by standardization and descriptor calculation) from files
-   inside the installed `rdkit` package, not via Python `import`. The spec
-   uses `collect_data_files("rdkit")` to pull all of it in rather than
-   guessing which files are load-bearing.
-3. **Dynamically imported compiled submodules.** RDKit, scikit-learn, and
-   matplotlib's Qt backend (`matplotlib.backends.backend_qtagg`, needed by
-   every embedded chart — Modules 10, 11, and the reproducibility panel) are
-   imported in ways PyInstaller's static graph walk doesn't always catch.
-   Listed explicitly under `hiddenimports`.
+On macOS, open the DMG and drag WaweKit into the Applications shortcut. The
+artifact is architecture-specific: an Apple Silicon build does not support an
+Intel-only Mac. A universal build requires a universal Python plus universal
+versions of every compiled dependency, including RDKit and Qt.
 
-## Deliberate choices
+## Automated builds for all operating systems
 
-- **`--onefile` is not used.** A single-exe build has to self-extract to a
-  temp directory on every launch, which is slow and awkward for an app this
-  size (RDKit + Qt + scikit-learn + matplotlib). A folder build starts
-  instantly and is the standard approach for scientific desktop apps.
-- **UPX compression is disabled** (`upx=False`). Compressing Qt/RDKit's
-  compiled binaries with UPX is a well-known source of both false-positive
-  antivirus flags and startup crashes on Windows. The size savings are not
-  worth either risk.
-- **The app icon is the WaweKit badge.** `resources/icons/wawekit.ico` is a
-  multi-resolution (16–256 px) Windows icon generated from the brand logo
-  (`WaweKit.png` at the repo root); the spec points `icon=` at it. A macOS
-  `.icns` would still need generating for a Mac build.
+The `Build desktop releases` workflow can be run manually from the repository's
+Actions tab. It builds macOS, Windows, and Linux artifacts in parallel and makes
+them downloadable from that workflow run.
 
-## What is *not* covered here
+Pushing a version tag also creates a GitHub release and attaches all artifacts:
 
-- Code signing (Windows Authenticode / macOS notarization) — required before
-  any real public distribution, since an unsigned executable triggers OS
-  warnings. Left for Module 20 release prep, since it needs real certificates.
-- An installer (MSI/NSIS on Windows, `.dmg` on macOS, AppImage on Linux) —
-  the `dist/Wawekit/` folder from this spec is the *input* to that step, not
-  a replacement for it.
-- Auto-update. Out of scope for v1.
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
 
-## Verifying a build
+Keep the tag, `project.version` in `pyproject.toml`, and `__version__` in
+`src/wawekit/__init__.py` synchronized. The build reads the artifact version
+from `__version__` automatically.
 
-After `pyinstaller wawekit.spec`, launch `dist/Wawekit/Wawekit.exe` directly
-(not through Python) and confirm:
+## Signing before public distribution
 
-- The main window opens and the theme/icons render (proves the `datas`
-  bundling worked).
-- Load a sample `.smi`/`.sdf` file and compute descriptors (proves RDKit's
-  data files and hidden imports are present).
-- Open the Chemical Space or Reproducibility panel (proves the matplotlib Qt
-  backend was bundled).
-- Open the 3D conformer viewer (proves `3Dmol-min.js` and QtWebEngine are
-  present).
+The generated artifacts are unsigned development builds. They are suitable for
+testing and direct sharing, but macOS Gatekeeper and Windows SmartScreen warn
+users about software from an unidentified developer.
 
-This is a full smoke test of every category of asset the hand-written spec
-exists to bundle — a build that merely "doesn't error during `pyinstaller`"
-is not sufficient proof, since missing data files fail at runtime, not build
-time.
+For a public release:
+
+- Sign the `.app` with an Apple Developer ID Application certificate, sign the
+  DMG, submit it to Apple's notary service, and staple the notarization ticket.
+- Sign `WaweKit.exe` (and any later Windows installer) with an Authenticode code
+  signing certificate.
+- Publish checksums beside every download.
+
+Certificates and credentials must be stored as encrypted CI secrets, never in
+the repository. Signing is intentionally not faked with ad-hoc credentials.
+
+## Smoke test
+
+Always test the frozen application itself, not `python -m wawekit`:
+
+1. Launch the installed application and confirm the splash, theme, and icons.
+2. Load a sample SMILES/SDF file and compute descriptors.
+3. Open a chart such as Chemical Space.
+4. Generate and inspect a 3D conformer.
+5. Export a report and reopen the application to verify user settings.
+
+These checks cover packaged resources, RDKit data, matplotlib's Qt backend,
+QtWebEngine/3Dmol.js, filesystem permissions, and native compiled libraries.
