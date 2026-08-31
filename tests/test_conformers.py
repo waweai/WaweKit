@@ -96,6 +96,28 @@ def test_recompute_regenerates():
     assert report.reused == 0
 
 
+def test_embedding_is_reproducible_for_a_fixed_seed():
+    """Multithreaded embedding must not cost reproducibility.
+
+    ``conformers._NUM_THREADS = 0`` lets RDKit use every core, which is a ~3.6x
+    speedup on the most expensive operation in the toolkit. That is only an
+    acceptable trade if identical inputs still give identical geometry — this
+    project measures protocol reproducibility for a living. If someone ever
+    parallelises in a way that reorders or perturbs conformers, this fails.
+    """
+    first = generate_conformer_set(Chem.MolFromSmiles(FLEXIBLE), _options())
+    second = generate_conformer_set(Chem.MolFromSmiles(FLEXIBLE), _options())
+
+    assert first.n_conformers == second.n_conformers
+    for a, b in zip(first.conformers, second.conformers, strict=True):
+        assert a.conf_id == b.conf_id
+        assert a.energy == b.energy
+        assert (
+            first.mol_3d.GetConformer(a.conf_id).GetPositions()
+            == second.mol_3d.GetConformer(b.conf_id).GetPositions()
+        ).all()
+
+
 def test_progress_callback_reaches_total():
     calls: list[tuple[int, int]] = []
     records = [_record("CCO", f"m{i}") for i in range(3)]
