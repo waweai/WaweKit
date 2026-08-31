@@ -7,6 +7,26 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+- **Chemistry → 3D Shape Descriptors (Ctrl+Shift+H).** Measures the shape of a
+  conformer rather than its topology: plane-of-best-fit deviation, radius of
+  gyration, asphericity/eccentricity, and the normalised principal-moment
+  ratios (NPR1/NPR2) that place a molecule on the rod/disc/sphere triangle,
+  plus the atomic composition of concentric radial shells about the centroid.
+  Records without geometry can have it generated as part of the run. The
+  descriptors are geometry-relative, so `MoleculeRecord.shape3d` records the
+  `ConformerOptions` that produced the geometry alongside the radial options —
+  values measured under different conformer protocols are not comparable, and
+  the cache carries enough to say so. Sortable table columns show the shape
+  values with the radial shells on hover, and the Conformers panel draws those
+  shells onto the 3D view so the numbers and the picture describe the same
+  thing.
+- **Desktop release pipeline.** `scripts/build_release.py` freezes the app for
+  the host platform and packages it the way that platform's users expect — a
+  compressed DMG on macOS (with a proper `.app` bundle and `.icns` icon), a
+  portable ZIP on Windows, a tarball on Linux — writing a SHA-256 checksum
+  beside every artifact. A GitHub Actions workflow runs it on all three
+  runners and attaches the results to the GitHub release when a `v*` tag is
+  pushed.
 - **Branding.** The WaweKit logo (`WaweKit.png`) is now the application
   identity: window/taskbar icon (badge crop), a multi-resolution
   `resources/icons/wawekit.ico` baked into the PyInstaller build, and a
@@ -19,6 +39,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   package and the frozen bundle; rendered in a non-modal QTextBrowser so
   users can follow along in the app. 6 new tests, including one that fails
   if the manual ever references a missing image or drops a feature section.
+
+### Changed
+- **Conformer generation now uses every available core** for both embedding and
+  force-field optimisation — measured at 3.6x on an eight-core machine, on the
+  most expensive operation in the toolkit. This costs nothing in
+  reproducibility: for a fixed `random_seed` RDKit derives each conformer's own
+  seed from its index, so a multithreaded run is bit-identical to a
+  single-threaded one, pruning included. A test locks that guarantee in.
+- **Line endings are normalised to LF** via `.gitattributes`, so a checkout on
+  any platform stores LF and editors can no longer turn a one-line change into
+  a whole-file rewrite.
 
 ### Fixed
 - **Gap analysis (4 correctness bugs, all in the research-track display
