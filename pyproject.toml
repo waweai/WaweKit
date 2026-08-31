@@ -83,8 +83,12 @@ Documentation = "https://github.com/waweai/WaweKit/blob/main/docs/FEATURES.md"
 Changelog = "https://github.com/waweai/WaweKit/blob/main/CHANGELOG.md"
 
 # Console/GUI launcher: after `pip install`, users run `wawekit`.
+# `wawekit-shortcut` creates (or, with --remove, deletes) the desktop icon and
+# menu entry; the first GUI launch does it automatically, since a PEP 517 wheel
+# has no post-install hook to run it for us.
 [project.scripts]
 wawekit = "wawekit.app:run"
+wawekit-shortcut = "wawekit.core.shortcut:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/wawekit"]

@@ -46,6 +46,11 @@ class AppConfig:
         Default main-window size in pixels.
     remember_window_geometry:
         Whether to persist and restore window size/position (used from Module 15).
+    create_desktop_shortcut:
+        Whether the first launch after installation may create a desktop icon
+        (see :mod:`wawekit.core.shortcut`). Only ever consulted once — a marker
+        file records that the attempt happened — so turning this off matters
+        only before the first run, e.g. for a shared or headless machine.
 
     """
 
@@ -54,6 +59,7 @@ class AppConfig:
     window_width: int = 1280
     window_height: int = 800
     remember_window_geometry: bool = True
+    create_desktop_shortcut: bool = True
 
     def with_overrides(self, **changes: Any) -> AppConfig:
         """Return a new config with ``changes`` applied (dataclass is frozen)."""

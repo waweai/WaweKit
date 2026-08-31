@@ -42,7 +42,8 @@ except ImportError as exc:  # pragma: no cover — depends on how the user insta
 from wawekit.core import constants
 from wawekit.core.config import load_config
 from wawekit.core.logging_config import setup_logging
-from wawekit.core.paths import ensure_app_dirs
+from wawekit.core.paths import config_dir, ensure_app_dirs
+from wawekit.core.shortcut import create_on_first_run
 
 logger = logging.getLogger(__name__)
 
@@ -110,6 +111,13 @@ def run(argv: list[str] | None = None) -> int:
     logfile = setup_logging(config.log_level)
     logger.info("Starting %s %s", constants.APP_NAME, constants.APP_VERSION)
     logger.info("Log file: %s", logfile)
+
+    # A pip-installed wheel has no post-install hook, so the first launch is
+    # where the user gets their desktop icon. Done after logging is up (so a
+    # failure is recorded) and before the window is built (so it costs nothing
+    # once the marker exists). Never raises — see shortcut.create_on_first_run.
+    if config.create_desktop_shortcut:
+        create_on_first_run(config_dir())
 
     # Imported here (not at module top) so logging/config are ready first and so
     # importing wawekit.app never forces the GUI stack to load prematurely.
