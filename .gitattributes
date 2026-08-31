@@ -1,0 +1,13 @@
+# Normalise line endings so the repository stores LF regardless of the
+# platform a contributor works on. Without this, an editor or transfer that
+# rewrites a file as CRLF shows up as a whole-file rewrite in `git diff`,
+# which buries real changes and destroys `git blame`.
+* text=auto eol=lf
+
+# Binary assets — never touch these.
+*.png binary
+*.ico binary
+*.icns binary
+*.pdf binary
+*.dmg binary
+*.zip binary

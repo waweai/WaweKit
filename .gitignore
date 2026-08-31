@@ -5,6 +5,7 @@ __pycache__/
 
 # Virtual environments
 .venv/
+.venv-*/
 venv/
 env/
 
@@ -38,6 +39,10 @@ Thumbs.db
 
 # App runtime data (should live in OS dirs, but ignore stray local copies)
 *.log
+
+# Reports the app writes when a run is exported from the working directory.
+/wawekit_report.pdf
+/wawekit_report.html
 
 # Research/development notes, manuscript drafts and raw benchmark data.
 # Kept locally and in the private development history; not part of the
