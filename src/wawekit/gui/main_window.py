@@ -1431,6 +1431,9 @@ class MainWindow(QMainWindow):
 
     def _on_space_finished(self, result: ProjectionResult) -> None:
         """Show the projection and reveal the Chemical Space dock."""
+        # Projection computes missing fingerprints as its first phase. Surface
+        # those cached results in the table instead of leaving the column stale.
+        self._table_panel.refresh_fingerprints()
         self._space_panel.set_projection(result)
         # Reflect the table's current selection in the fresh plot.
         self._space_panel.highlight_records(self._table_panel.selected_records())
@@ -1505,6 +1508,9 @@ class MainWindow(QMainWindow):
 
     def _on_cluster_finished(self, report: ClusterReport) -> None:
         """Repaint the cluster column and colour the space map by cluster."""
+        # Clustering also computes fingerprints on demand; show that work as
+        # well as the resulting cluster assignments.
+        self._table_panel.refresh_fingerprints()
         self._table_panel.refresh_clusters()
         # Paint the chemical-space plot by cluster so the families light up; if
         # no projection is on screen yet, this just presets the colour choice.

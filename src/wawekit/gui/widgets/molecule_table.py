@@ -647,9 +647,20 @@ class MoleculeTablePanel(QWidget):
         self._fix_column_widths()
 
     def refresh_fingerprints(self) -> None:
-        """Repaint the fingerprint column after vectors were computed in place."""
+        """Repaint the fingerprint column and bring the results into view.
+
+        The column sits beyond the descriptor and 3D-shape panels, so repainting
+        it alone leaves the visible table looking unchanged on a normal-sized
+        window.  Scroll to the first result just as similarity search scrolls to
+        its newly populated score column.
+        """
         self.model.fingerprints_updated()
         self._fix_column_widths()
+        if self._proxy.rowCount():
+            self._view.scrollTo(
+                self._proxy.index(0, _FINGERPRINT_COLUMN),
+                QAbstractItemView.ScrollHint.EnsureVisible,
+            )
 
     def refresh_scaffolds(self) -> None:
         """Repaint the scaffold column after scaffolds were computed in place.

@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from unittest.mock import patch
+
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QAbstractItemView
 from rdkit import Chem
 
 from wawekit.gui.widgets.molecule_table import (
@@ -188,6 +191,21 @@ def test_fingerprint_cell_tooltip_carries_full_parameters(qtbot):
 
     tip = model.data(model.index(0, _FINGERPRINT_COLUMN), Qt.ItemDataRole.ToolTipRole)
     assert "Morgan r2" in tip and "2048" in tip
+
+
+def test_refresh_fingerprints_brings_the_results_into_view(qtbot):
+    panel = MoleculeTablePanel()
+    qtbot.addWidget(panel)
+    records = _records(("CCO", "ethanol"))
+    panel.append_records(records)
+    compute_fingerprints(records)
+
+    with patch.object(panel._view, "scrollTo") as scroll_to:
+        panel.refresh_fingerprints()
+
+    index, hint = scroll_to.call_args.args
+    assert index.column() == _FINGERPRINT_COLUMN
+    assert hint == QAbstractItemView.ScrollHint.EnsureVisible
 
 
 def test_alerts_cell_blank_until_computed(qtbot):
