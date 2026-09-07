@@ -236,7 +236,9 @@ features calls this one first.
 2. Choose the algorithm (Morgan is the default) and parameters (radius, bit
    size, features).
 3. Run — a **Fingerprint** column shows algorithm + bits-set summary per row
-   (hover for full parameters).
+   (hover for full parameters). WaweKit brings the column into view when the
+   calculation finishes. Similarity search, chemical-space projection, and
+   clustering also refresh it when they compute fingerprints automatically.
 
 ---
 
